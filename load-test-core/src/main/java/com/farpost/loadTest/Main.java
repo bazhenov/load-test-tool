@@ -29,7 +29,7 @@ public class Main {
       int concurrencyLevel = readInt(arg, 'c', 1);
       int sampleCount = readInt(arg, 'n', 1);
 
-      ResultFormatter formatter = createFormatter(readString(arg, 'r'));
+      ResultFormatter formatter = createFormatter(arg.getOptionValue('r'));
 
       Task task = createTask(fqnClass);
 
@@ -55,7 +55,7 @@ public class Main {
   }
 
   private static ResultFormatter createFormatter(String type) {
-    if ("plain".equalsIgnoreCase(type)) {
+    if ("plain".equalsIgnoreCase(type) || type == null) {
       return new PlainResultFormatter(System.out);
     } else {
       throw new RuntimeException("Invalid formatter type: " + type);
