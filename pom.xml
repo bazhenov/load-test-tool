@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.farpost.load-test</groupId>
-	<artifactId>load-test-parent</artifactId>
+	<groupId>com.farpost.ldt</groupId>
+	<artifactId>ldt-parent</artifactId>
 	<packaging>pom</packaging>
 	<version>1.0-SNAPSHOT</version>
-	<name>load-test-parent</name>
+	<name>ldt-parent</name>
 	<url>http://maven.apache.org</url>
 	<dependencies>
 		<dependency>
@@ -25,6 +23,7 @@
 		</dependency>
 	</dependencies>
 	<modules>
-		<module>load-test-core</module>
-	</modules>
+		<module>ldt-core</module>
+    <module>ldt-assembly</module>
+  </modules>
 </project>
