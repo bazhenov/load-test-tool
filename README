@@ -1,0 +1,6 @@
+Load test tool
+==============
+
+Simple but powerful command line tool for load testing your Java modules. It has simple API
+that allows you to define testing tasks. It have concept similar to JUnit/TestNG tests
+but with concentration on performance in concurrent environment.
