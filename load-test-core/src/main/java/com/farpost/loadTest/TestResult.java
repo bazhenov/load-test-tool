@@ -8,8 +8,7 @@ public class TestResult {
 	private final List<ThreadTestHistory> history;
 	private long totalTime;
 	private final int threadSamplesCount;
-	private long overallTime = 0;
-	private long maxTime = 0;
+  private long maxTime = 0;
 	private long minTime = Long.MAX_VALUE;
 
 	public TestResult(List<ThreadTestHistory> history, int threadSamplesCount) {
@@ -41,7 +40,6 @@ public class TestResult {
 		if ( threadHistory.getTotalTime() > totalTime ) {
 			totalTime = threadHistory.getTotalTime();
 		}
-		overallTime += threadHistory.getTotalTime();
 		for ( long time : threadHistory.getSamples() ) {
 			if ( time < minTime ) {
 				minTime = time;

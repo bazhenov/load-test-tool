@@ -91,7 +91,7 @@ public class Main {
   }
 
   private static String readString(CommandLine arg, char name) throws ParseException {
-    String value = arg.getOptionValue('z');
+    String value = arg.getOptionValue(name);
     if (value == null) {
       throw new ParseException("Class name should be given");
     }
