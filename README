@@ -4,3 +4,39 @@ Load test tool
 Simple but powerful command line tool for load testing your Java modules. It has simple API
 that allows you to define testing tasks. It have concept similar to JUnit/TestNG tests
 but with concentration on performance in concurrent environment.
+
+Building
+========
+You need nothing more but maven for building load test tool. After building you will have tar.gz artifact
+in ldt-assembly/target directory. You should unpack it in some directory where ldt will be installed:
+
+	bazhenov@home Developer$ tar xvf ~/Developer/load-test-tool/ldt-assembly/target/ldt-assembly-1.0-SNAPSHOT.tar.gz 
+	x ldt-assembly-1.0-SNAPSHOT/bin/ldt.sh
+	x ldt-assembly-1.0-SNAPSHOT/bin/install.sh
+	x ldt-assembly-1.0-SNAPSHOT/lib/ldt-core-1.0-SNAPSHOT.jar
+	x ldt-assembly-1.0-SNAPSHOT/lib/commons-beanutils-1.7.0.jar
+	x ldt-assembly-1.0-SNAPSHOT/lib/commons-logging-1.0.3.jar
+	x ldt-assembly-1.0-SNAPSHOT/lib/commons-cli-1.1.jar
+	x ldt-assembly-1.0-SNAPSHOT/lib/log4j-1.2.14.jar
+	x ldt-assembly-1.0-SNAPSHOT/lib/ldt-assembly-1.0-SNAPSHOT.jar
+	bazhenov@home Developer$ alias ldt="~/Developer/ldt-assembly-1.0-SNAPSHOT/bin/ldt.sh"
+	bazhenov@home Developer$ ldt
+	usage: ltd
+	 -c,--concurrency-level <arg>   concurrency level
+	 -n,--count <arg>               sample count
+ 	 -r,--result-printer <arg>      result printer type (plain, log)
+	 -z,--clazz <arg>               full qualified test class name
+	bazhenov@home Developer$ ldt -z com.farpost.ldt.ST -c 2 -n 10
+	log4j:WARN No appenders could be found for logger (com.farpost.ldt.Main).
+	log4j:WARN Please initialize the log4j system properly.
+    	                 RESULTS                      
+	==================================================
+	             Concurrency level: 2
+    	Samples count (per thread): 10
+	                    Total time: 3001 ms
+    	                 Min. time: 300 ms
+        	             Max. time: 301 ms
+            	        Throughput: 6.7 r/s
+	==================================================
+
+You could use alias or some another way to publish ldt.sh script in your shell environment (ln -s ?).
