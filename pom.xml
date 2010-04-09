@@ -22,6 +22,15 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.farpost.ldt</groupId>
+        <artifactId>ldt-core</artifactId>
+        <version>1.0-SNAPSHOT</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 	<modules>
 		<module>ldt-core</module>
     <module>ldt-assembly</module>

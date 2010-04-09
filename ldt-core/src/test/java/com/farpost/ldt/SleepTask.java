@@ -2,7 +2,7 @@ package com.farpost.ldt;
 
 import static java.lang.Thread.sleep;
 
-public class SleepTask extends AbstractTask {
+class SleepTask extends AbstractTask {
 
 	private final long delay;
 

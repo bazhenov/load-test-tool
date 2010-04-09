@@ -6,7 +6,7 @@ import org.hamcrest.Matcher;
 
 import static java.lang.Math.abs;
 
-public class TestUtils {
+class TestUtils {
 
   public static <T extends Number> Matcher<T> near(T value, int delta) {
     return new NearMatcher(value, delta);
