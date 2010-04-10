@@ -4,6 +4,7 @@ import org.apache.commons.cli.*;
 import org.apache.log4j.Logger;
 
 import java.lang.reflect.*;
+import java.util.Map;
 
 import static java.lang.Integer.parseInt;
 import static java.lang.System.exit;
@@ -12,32 +13,35 @@ public class Main {
 
   private static final Logger log = Logger.getLogger(Main.class);
 
-  public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException {
+  public static void main(String[] arg) throws ClassNotFoundException, NoSuchMethodException {
 
     Options options = new Options();
     options.addOption("z", "clazz", true, "full qualified test class name");
     options.addOption("c", "concurrency-level", true, "concurrency level");
     options.addOption("r", "result-printer", true, "result printer type (plain, log)");
     options.addOption("n", "count", true, "sample count");
+    options.addOption("p", "parameters", true, "task parameters");
     String fqnClass = null;
     try {
       CommandLineParser parser = new PosixParser();
-      CommandLine arg = parser.parse(options, args);
+      CommandLine args = parser.parse(options, arg);
 
-      fqnClass = readString(arg, 'z');
-      int concurrencyLevel = readInt(arg, 'c', 1);
-      int sampleCount = readInt(arg, 'n', 1);
+      fqnClass = readString(args, 'z');
+      int concurrencyLevel = readInt(args, 'c', 1);
+      int sampleCount = readInt(args, 'n', 1);
 
-      ResultFormatter formatter = createFormatter(arg.getOptionValue('r'));
+      ResultFormatter formatter = createFormatter(args.getOptionValue('r'));
 
       Task task = createTask(fqnClass);
+      if ( args.hasOption('p') ) {
+        injectParameters(task, args.getOptionValue('p'));
+      }
 
       TestRunner runner = new TestRunner();
       runner.setConcurrencyLevel(concurrencyLevel);
       runner.setThreadSamplesCount(sampleCount);
       log.debug("Running tests for type: " + fqnClass);
       TestResult result = runner.run(task);
-
 
       formatter.format(result);
 
@@ -53,6 +57,11 @@ public class Main {
     }
   }
 
+  private static void injectParameters(Task task, String parameters) {
+    Map<String,String> map = MapParser.parse(parameters);
+    task.setParameters(map);
+  }
+
   private static ResultFormatter createFormatter(String type) {
     if ("plain".equalsIgnoreCase(type) || type == null) {
       return new PlainResultFormatter(System.out);
@@ -64,15 +73,14 @@ public class Main {
   private static Task createTask(String fqnClass) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
     Class<?> type = Class.forName(fqnClass);
 
-    if (!Task.class.isAssignableFrom(type)) {
-      error(type.getName() + " should implement interface " + Task.class.getName());
-    }
     if (isAbstract(type)) {
-      error(type.getName() + " should not be not abstract class not interface");
+      error(type.getName() + " should not be not abstract class nor interface");
     }
 
-    Constructor<Task> constructor = ((Class<Task>) type).getConstructor();
-    return constructor.newInstance();
+    Object o = type.getConstructor().newInstance();
+    return Task.class.isAssignableFrom(type)
+      ? (Task) o
+      : new PojoTask(o);
   }
 
   private static boolean isAbstract(Class<?> type) {

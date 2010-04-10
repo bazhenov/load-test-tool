@@ -26,7 +26,7 @@ in ldt-assembly/target directory. You should unpack it in some directory where l
 	 -n,--count <arg>               sample count
  	 -r,--result-printer <arg>      result printer type (plain, log)
 	 -z,--clazz <arg>               full qualified test class name
-	bazhenov@home Developer$ ldt -z com.farpost.ldt.ST -c 2 -n 10
+	bazhenov@home Developer$ ldt -z com.farpost.ldt.Sleep -c 2 -n 10
 	log4j:WARN No appenders could be found for logger (com.farpost.ldt.Main).
 	log4j:WARN Please initialize the log4j system properly.
     	                 RESULTS                      
