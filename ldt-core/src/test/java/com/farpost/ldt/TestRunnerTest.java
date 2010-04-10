@@ -47,7 +47,7 @@ public class TestRunnerTest {
 
     Task task = new PojoTask<SleepTask>(new SleepTask(10));
 		TestResult result = runner.run(task);
-		assertThat(result.getThroughput(), equalTo(200f));
+		assertThat(result.getThroughput(), near(200f, 50f));
 	}
 
   @Test
