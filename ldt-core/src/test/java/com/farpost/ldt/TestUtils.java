@@ -8,15 +8,15 @@ import static java.lang.Math.abs;
 
 class TestUtils {
 
-  public static <T extends Number> Matcher<T> near(T value, int delta) {
+  public static <T extends Number> Matcher<T> near(T value, float delta) {
     return new NearMatcher(value, delta);
   }
 
   private static class NearMatcher<T> extends BaseMatcher<Number> {
     private final Number expected;
-    private final int delta;
+    private final float delta;
 
-    public NearMatcher(Number expected, int delta) {
+    public NearMatcher(Number expected, float delta) {
       this.expected = expected;
       this.delta = delta;
     }

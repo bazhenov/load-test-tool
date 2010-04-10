@@ -2,23 +2,23 @@ package com.farpost.ldt;
 
 import static java.lang.Thread.sleep;
 
-class SleepTask extends AbstractTask {
+public class SleepTask {
 
-	private final long delay;
+	private long delay;
 
 	public SleepTask(long delay) {
 		this.delay = delay;
 	}
 
   public SleepTask() {
-    delay = 300;
+    this(10);
+  }
+
+  public void setDelay(long delay) {
+    this.delay = delay;
   }
 
   public void execute() throws Exception {
 		sleep(delay);
 	}
-
-  public void prepare() throws Exception {}
-
-  public void cleanup() throws Exception {}
 }

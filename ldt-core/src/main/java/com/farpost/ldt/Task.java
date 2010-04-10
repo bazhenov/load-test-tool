@@ -1,5 +1,8 @@
 package com.farpost.ldt;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
+
 /**
  * This is base interface for load testing task
  * <p/>
@@ -36,4 +39,6 @@ public interface Task {
    * @throws Exception if task cleanup failed
    */
   void cleanup() throws Exception;
+
+  void setParameters(Map<String, String> parameters) throws IllegalArgumentException;
 }

@@ -2,6 +2,8 @@ package com.farpost.ldt;
 
 import org.testng.annotations.Test;
 
+import java.lang.reflect.InvocationTargetException;
+
 import static com.farpost.ldt.TestUtils.near;
 import static org.easymock.EasyMock.*;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -10,22 +12,27 @@ import static org.hamcrest.Matchers.equalTo;
 public class TestRunnerTest {
 
 	@Test
-	public void testRunnerCanCalculateTotalTime() throws InterruptedException {
+	public void testRunnerCanCalculateTotalTime()
+    throws InterruptedException, InvocationTargetException, NoSuchMethodException, InstantiationException,
+    IllegalAccessException {
 		TestRunner runner = new TestRunner();
-		TestResult result = runner.run(new SleepTask(15));
+    Task task = new PojoTask<SleepTask>(new SleepTask(15), "execute");
+    TestResult result = runner.run(task);
 
 		assertThat(result.getConcurrencyLevel(), equalTo(1));
 		assertThat(result.getTotalTime(), near(15L, 1));
 	}
 
 	@Test
-	public void testRunnerCanRunTasksSeveralTimes() throws InterruptedException {
+	public void testRunnerCanRunTasksSeveralTimes() throws InterruptedException, NoSuchMethodException {
 		TestRunner runner = new TestRunner();
 		int samples = 5;
 		long delay = 19;
 		runner.setThreadSamplesCount(samples);
 		runner.setConcurrencyLevel(3);
-		TestResult result = runner.run(new SleepTask(delay));
+
+    Task task = new PojoTask<SleepTask>(new SleepTask(delay));
+		TestResult result = runner.run(task);
 
 		assertThat(result.getConcurrencyLevel(), equalTo(3));
 		assertThat(result.getThreadSamplesCount(), equalTo(samples));
@@ -33,12 +40,13 @@ public class TestRunnerTest {
 	}
 
 	@Test
-	public void testRunnerCanMeasureThroughput() throws InterruptedException {
+	public void testRunnerCanMeasureThroughput() throws InterruptedException, NoSuchMethodException {
 		TestRunner runner = new TestRunner();
 		runner.setConcurrencyLevel(2);
 		runner.setThreadSamplesCount(10);
 
-		TestResult result = runner.run(new SleepTask(10));
+    Task task = new PojoTask<SleepTask>(new SleepTask(10));
+		TestResult result = runner.run(task);
 		assertThat(result.getThroughput(), equalTo(200f));
 	}
 
