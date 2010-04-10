@@ -19,7 +19,7 @@ public class PlainResultFormatter implements ResultFormatter {
     out.println(String.format("%30s: %d ms", "Max. time", result.getMaxTime()));
     float throughput = result.getThroughput();
     if ( throughput > 0 ) {
-      out.println(String.format("%30s: %.1f r/s", "Throughput", throughput));
+      out.println(String.format("%30s: %.1f tps", "Throughput", throughput));
     }else{
       out.println(String.format("%30s: inf.", "Throughput"));
     }

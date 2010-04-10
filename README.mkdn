@@ -65,9 +65,15 @@ classpath so if you are in classpath you simple should call:
 This should run tests and display statistic. You could ajust concurrency level and thread sample count (task repeat
 count)
 
-	bazhenov@home$ ldt -z full.quialified.ClassName -c 2 -n 100
 
+	bazhenov@home$ ldt -z full.quialified.ClassName -c 2 -n 100
 In this example test defined in a class will be run in two separate threads 100 times in each thread.
+
+If test class contains several tests (cases) you could choose which to run with followinf syntax:
+
+	bazhenov@home$ ldt -z full.quialified.ClassName#test1
+
+Strictly speaking test address `full.quialified.ClassName` equals to `full.quialified.ClassName#execute`.
 
 Test parameters
 ===============
