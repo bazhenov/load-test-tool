@@ -1,14 +1,17 @@
 package com.farpost.ldt;
 
 /**
- * Данный интерфес предсавляет собой задачу, которую инфраструктура может выполнять.
+ * This is base interface for load testing task
  * <p/>
- * К тестовым задачам выставляется ряд требований. Задачи должны быть потокобезопасны, так
- * как тестовая инфраструктура может запускать их в нескольких потоках.
+ * Method {@link Task#execute()} should be thread safe, as test runner will call this method from different
+ * threads if concurrency level greater than 1. 
  */
 public interface Task {
 
-	String getDescription();
-
+  /**
+   * Execute test task. Method implementaion shoud be thread safe.
+   *
+   * @throws Exception if task execution fails
+   */
 	void execute() throws Exception;
 }
