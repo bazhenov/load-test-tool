@@ -34,14 +34,14 @@ public class PojoTaskTest {
 
     TestRunner runner = new TestRunner();
     runner.setConcurrencyLevel(2);
-    runner.setThreadSamplesCount(50);
+    runner.setThreadSamplesCount(5);
 
     Map<String, String> parameters = new HashMap<String, String>();
-    parameters.put("delay", "20");
+    parameters.put("delay", "200");
     task.setParameters(parameters);
 
     TestResult result = runner.run(task);
-    assertThat(result.getThroughput(), near(100f, 5));
+    assertThat(result.getThroughput(), near(10f, 2f));
   }
 
   public static class SomeTask {
