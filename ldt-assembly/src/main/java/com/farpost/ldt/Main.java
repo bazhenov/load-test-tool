@@ -65,6 +65,8 @@ public class Main {
 	private static ResultFormatter createFormatter(String type) {
 		if ("plain".equalsIgnoreCase(type) || type == null) {
 			return new PlainResultFormatter(System.out);
+		}else if ("log".equalsIgnoreCase(type)) {
+			return new ElapsedTimeLogResultFormatter(System.out);
 		} else {
 			throw new RuntimeException("Invalid formatter type: " + type);
 		}

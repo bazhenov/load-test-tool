@@ -75,20 +75,23 @@ If test class contains several tests (cases) you could choose which to run with 
 
 Strictly speaking test address `full.quialified.ClassName` equals to `full.quialified.ClassName#execute`.
 
-`ldt` package contains several standart tasks. For example `HttpTask` for testing throughput of http services:
+`ldt` package contains several standard tasks. For example `HttpTask` for testing throughput of http services:
 
-	bazhenov@home$ ldt -z com.farpost.ldt.HttTask#get -p "url=http://google.com/" -n 10
-		                     RESULTS                      
-	==================================================
-	             Concurrency level: 1
-	    Samples count (per thread): 10
-	                    Total time: 11951 ms
-	                     Min. time: 994 ms
-	                     Max. time: 1906 ms
-	                    Throughput: 0.8 r/s
-	==================================================
+	bazhenov@home$ ldt -z com.farpost.ldt.HttTask#get -p "url=http://google.com/" -n 10 -r log
+	1448
+	1011
+	997
+	987
+	989
+	2349
+	1229
+	990
+	983
+	1948
 
-As you see I have not a very good internet connection. I'm inclined to think that my physical location is reason to that ;)
+As you see I have not a very good link to `google.com`. I'm inclined to think that my physical location is reason to that ;)
+Anyhow, this example shows how you can use standard task in conjuction with different result printer (`-r log`) to get raw elapsed
+time log for several http requests.
 
 Test parameters
 ===============
