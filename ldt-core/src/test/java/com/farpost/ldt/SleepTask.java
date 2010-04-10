@@ -17,4 +17,8 @@ class SleepTask extends AbstractTask {
   public void execute() throws Exception {
 		sleep(delay);
 	}
+
+  public void prepare() throws Exception {}
+
+  public void cleanup() throws Exception {}
 }

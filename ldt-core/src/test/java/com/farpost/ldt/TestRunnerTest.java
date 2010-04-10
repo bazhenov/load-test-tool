@@ -3,7 +3,7 @@ package com.farpost.ldt;
 import org.testng.annotations.Test;
 
 import static com.farpost.ldt.TestUtils.near;
-import static java.lang.Thread.sleep;
+import static org.easymock.EasyMock.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -41,4 +41,23 @@ public class TestRunnerTest {
 		TestResult result = runner.run(new SleepTask(10));
 		assertThat(result.getThroughput(), equalTo(200f));
 	}
+
+  @Test
+  public void testRunnerShouldCallPrepareMethod() throws Exception {
+    Task t = createMock(Task.class);
+
+    t.prepare();
+    t.execute();
+    t.execute();
+    t.cleanup();
+
+    replay(t);
+    TestRunner runner = new TestRunner();
+    runner.setConcurrencyLevel(2);
+    runner.setThreadSamplesCount(1);
+
+    runner.run(t);
+
+    verify(t);
+  }
 }

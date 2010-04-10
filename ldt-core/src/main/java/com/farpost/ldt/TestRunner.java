@@ -12,6 +12,8 @@ public class TestRunner {
 	private volatile int concurrencyLevel = 1;
   private volatile int threadSamplesCount = 1;
 
+  private static final Logger log = Logger.getLogger(TestRunner.class);
+
 	public void setConcurrencyLevel(int concurrencyLevel) {
 		this.concurrencyLevel = concurrencyLevel;
 	}
@@ -21,28 +23,63 @@ public class TestRunner {
   }
 
   public synchronized TestResult run(Task task) throws InterruptedException {
-    List<Worker> workerList = new ArrayList<Worker>(concurrencyLevel);
-    CyclicBarrier syncBarrier = new CyclicBarrier(concurrencyLevel+1);
-    for (int i = 0; i < concurrencyLevel; i++) {
-      Worker worker = new Worker(task, threadSamplesCount, syncBarrier);
-      workerList.add(worker);
-      new Thread(worker).start();
+    prepare(task);
+    try {
+      CyclicBarrier sync = new CyclicBarrier(concurrencyLevel+1);
+      List<Worker> workers = spawnWorkers(task, concurrencyLevel, threadSamplesCount, sync);
+      startAndWaitForComplete(sync);
+
+      List<ThreadTestHistory> threadHistory = collectExecutionHistory(workers);
+      return new TestResult(threadHistory, threadSamplesCount);
+    } finally {
+      cleanup(task);
     }
+  }
+
+  private void startAndWaitForComplete(CyclicBarrier syncBarrier) throws InterruptedException {
     try {
       syncBarrier.await();
       syncBarrier.await();
     } catch (BrokenBarrierException e) {
       throw new TestExecutionException(e);
     }
+  }
 
-	  List<ThreadTestHistory> threadHistory = new ArrayList<ThreadTestHistory>(concurrencyLevel);
+  private List<ThreadTestHistory> collectExecutionHistory(List<Worker> workerList) {
+    List<ThreadTestHistory> threadHistory = new ArrayList<ThreadTestHistory>(concurrencyLevel);
     for (Worker worker : workerList) {
       threadHistory.add(worker.getTestResult());
     }
-	  return new TestResult(threadHistory, threadSamplesCount);
+    return threadHistory;
   }
 
-	private static class Worker implements Runnable {
+  private List<Worker> spawnWorkers(Task task, int concurrencyLevel, int samplesCount, CyclicBarrier syncBarrier) {
+    List<Worker> workerList = new ArrayList<Worker>(concurrencyLevel);
+    for (int i = 0; i < concurrencyLevel; i++) {
+      Worker worker = new Worker(task, samplesCount, syncBarrier);
+      workerList.add(worker);
+      new Thread(worker).start();
+    }
+    return workerList;
+  }
+
+  private void prepare(Task task) {
+    try {
+      task.prepare();
+    } catch (Exception e) {
+      throw new TaskPrepareFailedException(e);
+    }
+  }
+
+  private void cleanup(Task task) {
+    try {
+      task.cleanup();
+    } catch (Exception e) {
+      log.error("Task cleanup failed", e);
+    }
+  }
+
+  private static class Worker implements Runnable {
 
 		private final Task task;
 		private final int times;
