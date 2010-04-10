@@ -57,27 +57,27 @@ Task running
 		}
 	}
 
-Method `example()` called when you pass `MathTest` as a class name. `ldt` automatically add current directory to
-classpath so if you are in classpath you simple should call:
+Method `execute()` called when you pass `MathTest` as a class name. 
 
   bazhenov@home$ ldt -z org.mypackage.MathTest
 
-This should run tests and display statistic. You could ajust concurrency level and thread sample count (task repeat
-count)
+This command will run tests and display execution statistic. It worth to mention that `ldt` automatically add current directory to classpath.
 
+You could ajust concurrency level and thread sample count (task repeat count)
 
 	bazhenov@home$ ldt -z full.quialified.ClassName -c 2 -n 100
+
 In this example test defined in a class will be run in two separate threads 100 times in each thread.
 
-If test class contains several tests (cases) you could choose which to run with followinf syntax:
+If test class contains several tests (cases) you could choose which to run with following syntax:
 
 	bazhenov@home$ ldt -z full.quialified.ClassName#test1
 
 Strictly speaking test address `full.quialified.ClassName` equals to `full.quialified.ClassName#execute`.
 
-`ldt` package contains several standard tasks. For example `HttpTask` for testing throughput of http services:
+`ldt` distribution contains several standard tasks. For example `HttpTask` for testing throughput of http services:
 
-	bazhenov@home$ ldt -z com.farpost.ldt.HttTask#get -p "url=http://google.com/" -n 10 -r log
+	bazhenov@home$ ldt -z com.farpost.ldt.HttpTask#get -p "url=http://google.com/" -n 10 -r log
 	1448
 	1011
 	997
@@ -131,7 +131,7 @@ is a maven module you could run load tests after compiling maven module.
 Maven submodules are not supported at the moment.
 
 License
-===========
+=======
 
 Copyright (c) 2010 Denis Bazhenov
 
