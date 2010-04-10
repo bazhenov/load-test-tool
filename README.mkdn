@@ -1,0 +1,107 @@
+Load test tool
+==============
+
+Simple but powerful command line tool for load testing your Java modules. It has simple API that allows you to define
+testing tasks. It have concept similar to JUnit/TestNG tests but with concentration on performance in concurrent
+environment.
+
+Building
+========
+You need nothing more but maven for building load test tool.
+	
+	bazhenov@home load-test-tool$ mvn package
+
+After building you will have tar.gz artifact in ldt-assembly/target directory. You should unpack it in some directory
+where ldt will be installed:
+where ldt will be installed:
+
+	bazhenov@home Developer$ tar xvf ~/Developer/load-test-tool/ldt-assembly/target/ldt-assembly-1.0-SNAPSHOT.tar.gz
+	x ldt-assembly-1.0-SNAPSHOT/bin/ldt.sh
+	x ldt-assembly-1.0-SNAPSHOT/bin/install.sh
+	x ldt-assembly-1.0-SNAPSHOT/lib/ldt-core-1.0-SNAPSHOT.jar
+	x ldt-assembly-1.0-SNAPSHOT/lib/commons-beanutils-1.7.0.jar
+	x ldt-assembly-1.0-SNAPSHOT/lib/commons-logging-1.0.3.jar
+	x ldt-assembly-1.0-SNAPSHOT/lib/commons-cli-1.1.jar
+	x ldt-assembly-1.0-SNAPSHOT/lib/log4j-1.2.14.jar
+	x ldt-assembly-1.0-SNAPSHOT/lib/ldt-assembly-1.0-SNAPSHOT.jar
+	bazhenov@home Developer$ alias ldt="~/Developer/ldt-assembly-1.0-SNAPSHOT/bin/ldt.sh"
+	bazhenov@home Developer$ ldt
+	usage: ltd
+	 -c,--concurrency-level <arg>   concurrency level
+	 -n,--count <arg>               sample count
+	 -p,--parameters <arg>          task parameters
+	 -r,--result-printer <arg>      result printer type (plain, log)
+	 -z,--clazz <arg>               full qualified test class name
+	bazhenov@home Developer$ ldt -z com.farpost.ldt.Sleep -c 2 -n 10
+	  	                 RESULTS
+	==================================================
+	             Concurrency level: 2
+	  	Samples count (per thread): 10
+	                    Total time: 3001 ms
+	  	                 Min. time: 300 ms
+	      	             Max. time: 301 ms
+	          	        Throughput: 6.7 r/s
+	==================================================
+
+You could use alias or some another way to publish ldt.sh script in your shell environment (ln -s is good way to start).
+
+Task running
+============
+
+ldt can run tests written as a simple pojo objects. Let's see an sample:
+
+	class MathTest {
+
+		public void execute() {
+			Math.sin(30);
+		}
+	}
+
+Method example() called when you pass MathTest as a class name. ldt automatically add current directory to classpath
+so if you are in classpath you simple should call:
+
+  bazhenov@home$ ldt -z org.mypackage.MathTest
+
+This should run tests and display statistic. You could ajust concurrency level and thread sample count (task repeat
+count)
+
+	bazhenov@home$ ldt -z full.quialified.ClassName -c 2 -n 100
+
+In this example test defined in a class will be run in two separate threads 100 times in each thread.
+
+Test parameters
+===============
+
+Sometimes there is need to pass some parameters to a test. Suppose following example:
+
+	class HttpRequestTest {
+
+		private String url;
+		private long timeout;
+
+		public void setUrl(String url) {
+			this.url = url;
+		}
+
+		public void setReadTimeout(long timeout) {
+			this.timeout = timeout;
+		}
+
+		public void execute() {
+			// reading url contents
+		}
+	}
+
+For passing url value in test we could use following command (parameters should be separated with comma):
+
+	bazhenov@home$ ldt -z org.mypackage.HttpRequestTest -p "url=http://host.com, timeout=3000"
+
+Maven integration
+=================
+
+ldt automatically adds 'target/classpath' directory to runtime classpath, so if you current working directory
+is a maven module you could run load tests after compiling maven module.
+
+	bazhenov@home maven-project$ mvn compile && ldt -z full.quialified.ClassName
+
+Maven submodules are not supported at the moment.

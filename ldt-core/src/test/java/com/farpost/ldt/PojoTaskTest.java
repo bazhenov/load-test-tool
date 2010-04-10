@@ -13,7 +13,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class PojoTaskTest {
 
   @Test
-  public void taskShouldAbleToInjectParameters() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException {
+  public void taskShouldAbleToInjectParameters()
+    throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException {
     PojoTask<SomeTask> task = new PojoTask<SomeTask>(SomeTask.class, "doWork");
 
     Map<String, String> parameters = new HashMap<String, String>();
@@ -65,6 +66,7 @@ public class PojoTaskTest {
       this.integer = integer;
     }
 
-    public void doWork() {}
+    public void doWork() {
+    }
   }
 }
