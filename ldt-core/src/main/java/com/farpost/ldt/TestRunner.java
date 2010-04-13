@@ -98,14 +98,14 @@ public class TestRunner {
 			try {
 				syncBarrier.await();
 				for (int i = 0; i < times; i++) {
-					long startTime = System.currentTimeMillis();
+					long startTime = System.nanoTime();
 					try {
 						task.execute();
-						long endTime = System.currentTimeMillis();
-						threadTestHistory.registerSample(endTime - startTime);
+						long endTime = System.nanoTime();
+						threadTestHistory.registerSample((endTime - startTime)/1000);
 					} catch (Exception e) {
-						long endTime = System.currentTimeMillis();
-						threadTestHistory.registerSample(endTime - startTime);
+						long endTime = System.nanoTime();
+						threadTestHistory.registerSample((endTime - startTime)/1000);
 						log.error("Task execution failed", e);
 					}
 				}

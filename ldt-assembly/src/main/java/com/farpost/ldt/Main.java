@@ -21,7 +21,7 @@ public class Main {
 		options.addOption("r", "result-printer", true, "result printer type (plain, log)");
 		options.addOption("n", "count", true, "sample count");
 		options.addOption("p", "parameters", true, "task parameters");
-		String fqnClass = null;
+		String fqnClass;
 		try {
 			CommandLineParser parser = new PosixParser();
 			CommandLine args = parser.parse(options, arg);

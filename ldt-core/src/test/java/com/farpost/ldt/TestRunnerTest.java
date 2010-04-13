@@ -20,7 +20,7 @@ public class TestRunnerTest {
     TestResult result = runner.run(task);
 
 		assertThat(result.getConcurrencyLevel(), equalTo(1));
-		assertThat(result.getTotalTime(), near(15L, 1));
+		assertThat(result.getTotalTime(), near(15000L, 1000));
 	}
 
 	@Test
@@ -36,7 +36,7 @@ public class TestRunnerTest {
 
 		assertThat(result.getConcurrencyLevel(), equalTo(3));
 		assertThat(result.getThreadSamplesCount(), equalTo(samples));
-		assertThat(result.getTotalTime(), near(samples * delay, 10));
+		assertThat(result.getTotalTime(), near(samples * delay * 1000, 10 * 1000));
 	}
 
 	@Test

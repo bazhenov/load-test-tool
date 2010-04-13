@@ -28,6 +28,9 @@ public class ThreadTestHistory {
     this.samples = new long[samplesCount];
   }
 
+	/**
+	 * @return total execution time in microseconds
+	 */
   public long getTotalTime() {
     long totalExecutionTime = 0;
     for (long sample : samples) {

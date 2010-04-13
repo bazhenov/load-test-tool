@@ -59,9 +59,8 @@ public class TestResult {
 	}
 
 	public float getThroughput() {
-		long avarageTime = (maxTime + minTime)/2;
 		return totalTime == 0
 			? 0
-			: 1000f / totalTime * threadSamplesCount * concurrencyLevel;
+			: 1000000f / totalTime * threadSamplesCount * concurrencyLevel;
 	}
 }
