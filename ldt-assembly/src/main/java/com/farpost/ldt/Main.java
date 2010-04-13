@@ -46,7 +46,7 @@ public class Main {
 			formatter.format(result);
 
 		} catch (ClassNotFoundException e) {
-			error("Class " + fqnClass + " not found");
+			error("Class " + e.getMessage() + " not found");
 		} catch (NoSuchMethodException e) {
 			error("Method not found: " + e.getMessage());
 		} catch (ParseException e) {
