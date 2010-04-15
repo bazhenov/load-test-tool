@@ -15,7 +15,7 @@ public class TestRunnerTest {
 	private TestRunner runner;
 
 	@BeforeMethod
-	protected void setUp() throws Exception {
+	public void setUp() throws Exception {
 		runner = new TestRunner();
 	}
 
@@ -33,7 +33,6 @@ public class TestRunnerTest {
 
 	@Test
 	public void testRunnerCanRunTasksSeveralTimes() throws InterruptedException, NoSuchMethodException {
-
 		int samples = 5;
 		long delay = 19;
 		runner.setThreadSamplesCount(samples);
@@ -58,14 +57,17 @@ public class TestRunnerTest {
 	}
 
 	@Test
-	public void testRunnerShouldWarmUpTest() throws Exception {
-		runner.setWarmUpThreshold(2);
+	public void testRunnerShouldCallPrepareMethod() throws Exception {
+		runner.setWarmUpThreshold(0);
+		runner.setConcurrencyLevel(2);
 		runner.setThreadSamplesCount(1);
 
 		Task task = createMock(Task.class);
+
+		task.prepare();
 		task.execute();
 		task.execute();
-		task.execute();
+		task.cleanup();
 
 		replay(task);
 
@@ -75,21 +77,23 @@ public class TestRunnerTest {
 	}
 
 	@Test
-	public void testRunnerShouldCallPrepareMethod() throws Exception {
-		Task t = createMock(Task.class);
-
-		t.prepare();
-		t.execute();
-		t.execute();
-		t.cleanup();
-
-		replay(t);
-		TestRunner runner = new TestRunner();
-		runner.setConcurrencyLevel(2);
+	public void testRunnerShouldWarmUpTest() throws Exception {
+		runner.setWarmUpThreshold(2);
 		runner.setThreadSamplesCount(1);
 
-		runner.run(t);
+		Task task = createMock(Task.class);
 
-		verify(t);
+		task.execute();
+		task.execute();
+
+		task.prepare();
+		task.execute();
+		task.cleanup();
+
+		replay(task);
+
+		runner.run(task);
+
+		verify(task);
 	}
 }
