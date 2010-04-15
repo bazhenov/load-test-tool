@@ -57,7 +57,7 @@ Task running
 
 Method `execute()` called when you pass `MathTest` as a class name. 
 
-  bazhenov@home$ ldt -z org.mypackage.MathTest
+	bazhenov@home$ ldt -z org.mypackage.MathTest
 
 This command will run tests and display execution statistic. It worth to mention that `ldt` automatically add current directory to classpath.
 
