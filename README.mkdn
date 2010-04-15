@@ -91,6 +91,29 @@ As you see I have not a very good link to `google.com`. I'm inclined to think th
 Anyhow, this example shows how you can use standard task in conjuction with different result printer (`-r log`) to get raw elapsed
 time log for several http requests.
 
+Fixture
+=======
+If you have some bootstraping code which must be executed before tests run you could define `prepare()` method. This method
+will be executed before any test in suite. All methods are called at one object instance, so `prepare()` method could communicate
+with test method using class properties:
+
+	class SomeTest {
+		
+		private int[] numbers;
+
+		public void prepare() {
+			numbers = new int[1000];
+		}
+
+		public void test() {
+			for ( int i : numbers ) {
+				// ...
+			}
+		}
+	}
+
+You could alse define `cleanup()` method which will be executed only once after all test measurements are finished.
+
 Warm up threshold
 =================
 
