@@ -20,6 +20,7 @@ public class Main {
 		options.addOption("c", "concurrency-level", true, "concurrency level");
 		options.addOption("r", "result-printer", true, "result printer type (plain, log)");
 		options.addOption("n", "count", true, "sample count");
+		options.addOption("w", "warmup-threshold", true, "warmup test execution count");
 		options.addOption("p", "parameters", true, "task parameters");
 		String fqnClass;
 		try {
@@ -29,6 +30,7 @@ public class Main {
 			fqnClass = readString(args, 'z');
 			int concurrencyLevel = readInt(args, 'c', 1);
 			int sampleCount = readInt(args, 'n', 1);
+			int warmupThreshold = readInt(args, 'w', 10);
 
 			ResultFormatter formatter = createFormatter(args.getOptionValue('r'));
 
@@ -40,6 +42,8 @@ public class Main {
 			TestRunner runner = new TestRunner();
 			runner.setConcurrencyLevel(concurrencyLevel);
 			runner.setThreadSamplesCount(sampleCount);
+			runner.setWarmUpThreshold(warmupThreshold);
+			
 			log.debug("Running tests for type: " + fqnClass);
 			TestResult result = runner.run(task);
 

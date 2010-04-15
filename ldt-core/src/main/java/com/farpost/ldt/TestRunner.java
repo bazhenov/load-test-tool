@@ -9,8 +9,9 @@ import java.util.concurrent.CyclicBarrier;
 
 public class TestRunner {
 
-	private volatile int concurrencyLevel = 1;
-	private volatile int threadSamplesCount = 1;
+	private int concurrencyLevel = 1;
+	private int threadSamplesCount = 1;
+	private int warmUpThreshold = 10;
 
 	private static final Logger log = Logger.getLogger(TestRunner.class);
 
@@ -18,7 +19,7 @@ public class TestRunner {
 		prepare(task);
 		try {
 			CyclicBarrier sync = new CyclicBarrier(concurrencyLevel + 1);
-			List<Worker> workers = spawnWorkers(task, concurrencyLevel, threadSamplesCount, sync);
+			List<Worker> workers = spawnWorkers(task, concurrencyLevel, threadSamplesCount, warmUpThreshold, sync);
 			startAndWaitForComplete(sync);
 
 			List<ThreadTestHistory> threadHistory = collectExecutionHistory(workers);
@@ -53,17 +54,17 @@ public class TestRunner {
 		return threadsHistory;
 	}
 
-	private List<Worker> spawnWorkers(Task task, int concurrencyLevel, int samplesCount, CyclicBarrier syncBarrier) {
+	private List<Worker> spawnWorkers(Task task, int concurrencyLevel, int samplesCount, int warmUpThreshold, CyclicBarrier syncBarrier) {
 		List<Worker> workerList = new ArrayList<Worker>(concurrencyLevel);
 		for (int i = 0; i < concurrencyLevel; i++) {
-			Worker worker = new Worker(task, samplesCount, syncBarrier);
+			Worker worker = new Worker(task, samplesCount, warmUpThreshold, syncBarrier);
 			workerList.add(worker);
 			new Thread(worker).start();
 		}
 		return workerList;
 	}
 
-	private void prepare(Task task) {
+	private static void prepare(Task task) {
 		try {
 			task.prepare();
 		} catch (Exception e) {
@@ -71,7 +72,7 @@ public class TestRunner {
 		}
 	}
 
-	private void cleanup(Task task) {
+	private static void cleanup(Task task) {
 		try {
 			task.cleanup();
 		} catch (Exception e) {
@@ -79,41 +80,82 @@ public class TestRunner {
 		}
 	}
 
+	/**
+	 * Setting warm up threshold for test runner.
+	 * <p/>
+	 * Warm up threshold is positive number how many times test will be executed before measurements are started.
+	 * Warm up period allow more accuratly measure execution statistic as first test executions may be diversed
+	 * by HotSpot compiller and other JVM activity.
+	 * <p/>
+	 * Warm up default value is 10.
+	 *
+	 * @param times warm up threshold
+	 * @throws IllegalArgumentException if invalid warm up threshold number given
+	 */
+	public void setWarmUpThreshold(int times) {
+		if (times < 0) {
+			throw new IllegalArgumentException();
+		}
+		warmUpThreshold = times;
+	}
+
+	/**
+	 * Worker Ñ a thread runnable which perform actual measurements
+	 */
 	private static class Worker implements Runnable {
 
 		private final Task task;
 		private final int times;
+		private final int warmUpThreshold;
 		private final CyclicBarrier syncBarrier;
 		private final ThreadTestHistory threadTestHistory;
 		private final static Logger log = Logger.getLogger(Worker.class);
 
-		private Worker(Task task, int times, CyclicBarrier syncBarrier) {
+		private Worker(Task task, int times, int warmUpThreshold, CyclicBarrier syncBarrier) {
 			this.task = task;
 			this.times = times;
+			this.warmUpThreshold = warmUpThreshold;
 			this.syncBarrier = syncBarrier;
 			threadTestHistory = new ThreadTestHistory(times);
 		}
 
 		public void run() {
+			for (int i = 0; i < warmUpThreshold; i++) {
+				runAndMeasure(task);
+			}
 			try {
 				syncBarrier.await();
 				for (int i = 0; i < times; i++) {
-					long startTime = System.nanoTime();
-					try {
-						task.execute();
-						long endTime = System.nanoTime();
-						threadTestHistory.registerSample((endTime - startTime)/1000);
-					} catch (Exception e) {
-						long endTime = System.nanoTime();
-						threadTestHistory.registerSample((endTime - startTime)/1000);
-						log.error("Task execution failed", e);
-					}
+					long runningTime = runAndMeasure(task);
+					threadTestHistory.registerSample(runningTime);
 				}
 				syncBarrier.await();
 			} catch (BrokenBarrierException e) {
 				log.error(e.getMessage(), e);
 			} catch (InterruptedException e) {
 				log.error(e.getMessage(), e);
+			}
+		}
+
+		/**
+		 * Run task and return it's execution time in microseconds.
+		 *
+		 * {@link System#nanoTime()} used for measurments. This method provides nothrow guarantee.
+		 *
+		 * @param task testing task
+		 * @return task execution time
+		 */
+		private long runAndMeasure(Task task) {
+			long startTime = System.nanoTime();
+			try {
+				task.execute();
+				long endTime = System.nanoTime();
+				return (endTime - startTime) / 1000;
+
+			} catch (Exception e) {
+				long endTime = System.nanoTime();
+				log.error("Task execution failed", e);
+				return (endTime - startTime) / 1000;
 			}
 		}
 
