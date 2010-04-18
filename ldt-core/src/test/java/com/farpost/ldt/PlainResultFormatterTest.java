@@ -2,7 +2,7 @@ package com.farpost.ldt;
 
 import org.testng.annotations.Test;
 
-import static com.farpost.ldt.PlainResultFormatter.formatTime;
+import static com.farpost.ldt.formatter.PlainResultFormatter.formatTime;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 

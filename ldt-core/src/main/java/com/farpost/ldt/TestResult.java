@@ -7,14 +7,13 @@ public class TestResult {
 	private final int concurrencyLevel;
 	private final List<ThreadTestHistory> threadsHistory;
 	private long totalTime;
-	private final int threadSamplesCount;
+	private int threadSamplesCount;
   private long maxTime = 0;
 	private long minTime = Long.MAX_VALUE;
 
-	public TestResult(List<ThreadTestHistory> threadsHistory, int threadSamplesCount) {
+	public TestResult(List<ThreadTestHistory> threadsHistory) {
 		this.threadsHistory = threadsHistory;
 		this.concurrencyLevel = threadsHistory.size();
-		this.threadSamplesCount = threadSamplesCount;
 		for ( ThreadTestHistory threadHistory : threadsHistory ) {
 			mergeHistory(threadHistory);
 		}
@@ -37,6 +36,7 @@ public class TestResult {
 	}
 
 	private void mergeHistory(ThreadTestHistory threadHistory) {
+		threadSamplesCount += threadHistory.getSamples().length;
 		if ( threadHistory.getTotalTime() > totalTime ) {
 			totalTime = threadHistory.getTotalTime();
 		}

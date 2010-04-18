@@ -1,5 +1,8 @@
 package com.farpost.ldt;
 
+import com.farpost.ldt.formatter.ElapsedTimeLogResultFormatter;
+import com.farpost.ldt.formatter.PlainResultFormatter;
+import com.farpost.ldt.formatter.ResultFormatter;
 import org.apache.commons.cli.*;
 import org.apache.log4j.Logger;
 

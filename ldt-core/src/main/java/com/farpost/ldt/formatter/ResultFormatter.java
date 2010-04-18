@@ -1,4 +1,6 @@
-package com.farpost.ldt;
+package com.farpost.ldt.formatter;
+
+import com.farpost.ldt.TestResult;
 
 /**
  * Result formatters are used to present results of testing to end user.

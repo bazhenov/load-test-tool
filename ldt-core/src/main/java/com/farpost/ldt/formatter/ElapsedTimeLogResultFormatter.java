@@ -1,4 +1,7 @@
-package com.farpost.ldt;
+package com.farpost.ldt.formatter;
+
+import com.farpost.ldt.TestResult;
+import com.farpost.ldt.ThreadTestHistory;
 
 import java.io.PrintStream;
 import java.util.List;

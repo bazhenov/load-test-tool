@@ -1,4 +1,6 @@
-package com.farpost.ldt;
+package com.farpost.ldt.formatter;
+
+import com.farpost.ldt.TestResult;
 
 import java.io.PrintStream;
 
@@ -18,7 +20,7 @@ public class PlainResultFormatter implements ResultFormatter {
 		out.println("                     RESULTS                      ");
 		out.println("--------------------------------------------------");
 		out.println(String.format(" %-30s: %d", "Concurrency level", result.getConcurrencyLevel()));
-		out.println(String.format(" %-30s: %d", "Samples count (per thread)", result.getThreadSamplesCount()));
+		out.println(String.format(" %-30s: %d", "Samples count", result.getThreadSamplesCount()));
 		out.println(String.format(" %-30s: %s", "Total time", formatTime(result.getTotalTime())));
 		out.println(String.format(" %-30s: %s", "Min. time", formatTime(result.getMinTime())));
 		out.println(String.format(" %-30s: %s", "Max. time", formatTime(result.getMaxTime())));
@@ -32,7 +34,7 @@ public class PlainResultFormatter implements ResultFormatter {
 		}
 	}
 
-	static String formatTime(long time) {
+	public static String formatTime(long time) {
 		if (time >= 1 * MIN) {
 			long minutes = time / MIN;
 			long seconds = (time % MIN) / SEC;

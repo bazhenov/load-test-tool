@@ -35,14 +35,15 @@ public class TestRunnerTest {
 	public void testRunnerCanRunTasksSeveralTimes() throws InterruptedException, NoSuchMethodException {
 		int samples = 5;
 		long delay = 19;
+		int concurrencyLevel = 3;
 		runner.setThreadSamplesCount(samples);
-		runner.setConcurrencyLevel(3);
+		runner.setConcurrencyLevel(concurrencyLevel);
 
 		Task task = new PojoTask<SleepTask>(new SleepTask(delay));
 		TestResult result = runner.run(task);
 
-		assertThat(result.getConcurrencyLevel(), equalTo(3));
-		assertThat(result.getThreadSamplesCount(), equalTo(samples));
+		assertThat(result.getConcurrencyLevel(), equalTo(concurrencyLevel));
+		assertThat(result.getThreadSamplesCount(), equalTo(samples * concurrencyLevel));
 		assertThat(result.getTotalTime(), near(samples * delay * 1000, 10 * 1000));
 	}
 

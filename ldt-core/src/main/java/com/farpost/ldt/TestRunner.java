@@ -12,6 +12,7 @@ public class TestRunner {
 	private int concurrencyLevel = 1;
 	private int threadSamplesCount = 1;
 	private int warmUpThreshold = 10;
+	private TestInterruptionStrategy testInterruptionStarategy = new CallCountInterruptionStrategy(1);
 
 	private static final Logger log = Logger.getLogger(TestRunner.class);
 
@@ -23,7 +24,7 @@ public class TestRunner {
 			startAndWaitForComplete(sync);
 
 			List<ThreadTestHistory> threadHistory = collectExecutionHistory(workers);
-			return new TestResult(threadHistory, threadSamplesCount);
+			return new TestResult(threadHistory);
 		} finally {
 			cleanup(task);
 		}
@@ -34,7 +35,11 @@ public class TestRunner {
 	}
 
 	public void setThreadSamplesCount(int samplesCount) {
-		this.threadSamplesCount = samplesCount;
+		setTestInterruptionStarategy(new CallCountInterruptionStrategy(samplesCount));
+	}
+
+	public void setTestInterruptionStarategy(TestInterruptionStrategy strategy) {
+		this.testInterruptionStarategy = strategy;
 	}
 
 	private void startAndWaitForComplete(CyclicBarrier syncBarrier) throws InterruptedException {
@@ -57,7 +62,7 @@ public class TestRunner {
 	private List<Worker> spawnWorkers(Task task, int concurrencyLevel, int samplesCount, int warmUpThreshold, CyclicBarrier syncBarrier) {
 		List<Worker> workerList = new ArrayList<Worker>(concurrencyLevel);
 		for (int i = 0; i < concurrencyLevel; i++) {
-			Worker worker = new Worker(task, samplesCount, warmUpThreshold, syncBarrier);
+			Worker worker = new Worker(task, testInterruptionStarategy, warmUpThreshold, syncBarrier);
 			workerList.add(worker);
 			new Thread(worker).start();
 		}
@@ -105,18 +110,18 @@ public class TestRunner {
 	private static class Worker implements Runnable {
 
 		private final Task task;
-		private final int times;
+		private final TestInterruptionStrategy strategy;
 		private final int warmUpThreshold;
 		private final CyclicBarrier syncBarrier;
 		private final ThreadTestHistory threadTestHistory;
 		private final static Logger log = Logger.getLogger(Worker.class);
 
-		private Worker(Task task, int times, int warmUpThreshold, CyclicBarrier syncBarrier) {
+		private Worker(Task task, TestInterruptionStrategy strategy, int warmUpThreshold, CyclicBarrier syncBarrier) {
 			this.task = task;
-			this.times = times;
+			this.strategy = strategy;
 			this.warmUpThreshold = warmUpThreshold;
 			this.syncBarrier = syncBarrier;
-			threadTestHistory = new ThreadTestHistory(times);
+			threadTestHistory = new ThreadTestHistory();
 		}
 
 		public void run() {
@@ -125,10 +130,11 @@ public class TestRunner {
 			}
 			try {
 				syncBarrier.await();
-				for (int i = 0; i < times; i++) {
-					long runningTime = runAndMeasure(task);
+				long runningTime;
+				do {
+					runningTime = runAndMeasure(task);
 					threadTestHistory.registerSample(runningTime);
-				}
+				} while ( strategy.shouldContinue(runningTime) );
 				syncBarrier.await();
 			} catch (BrokenBarrierException e) {
 				log.error(e.getMessage(), e);
