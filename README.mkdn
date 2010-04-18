@@ -112,7 +112,7 @@ with test method using class properties:
 		}
 	}
 
-You could alse define `cleanup()` method which will be executed only once after all test measurements are finished.
+You could also define `cleanup()` method which will be executed only once after all test measurements are finished.
 
 Warm up threshold
 =================
@@ -151,6 +151,12 @@ Sometimes there is need to pass some parameters to a test. Suppose following tes
 For passing url value in test we could use following command (parameters should be separated with comma):
 
 	bazhenov@home$ ldt -z org.mypackage.HttpRequestTest -p "url=http://host.com, timeout=3000"
+
+JVM startup options
+===================
+In some cases you want to pass additional parameters to JVM when starting test (eg. heap size):
+
+	bazhenov@home$ JAVA_OPTS="Xmx512M" ldt -z path.to.Test
 
 Maven integration
 =================

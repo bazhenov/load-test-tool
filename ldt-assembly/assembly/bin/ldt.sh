@@ -5,4 +5,4 @@ LINK=$0
 WHOME=`dirname $LINK`
 LDT_CLASSPATH=.:./target/classes
 
-java -cp "$WHOME/../lib/*:$LDT_CLASSPATH" com.farpost.ldt.Main $@
+java $JAVA_OPTS -cp "$WHOME/../lib/*:$LDT_CLASSPATH" com.farpost.ldt.Main $@
