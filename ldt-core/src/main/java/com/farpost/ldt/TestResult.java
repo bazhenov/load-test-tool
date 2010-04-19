@@ -61,6 +61,6 @@ public class TestResult {
 	public float getThroughput() {
 		return totalTime == 0
 			? 0
-			: 1000000f / totalTime * threadSamplesCount * concurrencyLevel;
+			: 1000000f / totalTime * threadSamplesCount;
 	}
 }

@@ -84,17 +84,17 @@ public class TestRunnerTest {
 
 		Task task = createMock(Task.class);
 
+		task.prepare();
+
 		task.execute();
 		task.execute();
 
-		task.prepare();
 		task.execute();
+
 		task.cleanup();
 
 		replay(task);
-
 		runner.run(task);
-
 		verify(task);
 	}
 }
