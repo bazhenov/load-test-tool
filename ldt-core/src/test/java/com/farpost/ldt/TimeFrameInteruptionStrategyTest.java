@@ -19,10 +19,10 @@ public class TimeFrameInteruptionStrategyTest {
 
 	@Test
 	public void shouldInterruptWhenExecutionTimeSumReachesGivenValue() {
-		TestInterruptionStrategy strategy = new TimeFrameInteruptionStrategy(6);
-		assertThat(strategy.shouldContinue(3), equalTo(true));
-		assertThat(strategy.shouldContinue(2), equalTo(true));
-		assertThat(strategy.shouldContinue(2), equalTo(false));
+		TestInterruptionStrategy strategy = new TimeFrameInteruptionStrategy(6000);
+		assertThat(strategy.shouldContinue(3000000), equalTo(true));
+		assertThat(strategy.shouldContinue(2000000), equalTo(true));
+		assertThat(strategy.shouldContinue(2000000), equalTo(false));
 	}
 
 }

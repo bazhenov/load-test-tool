@@ -121,9 +121,27 @@ There are some reasons why in complex environments such as JVM you could want to
 resulting statistic). At the moment when JVM is started and run yor code, there are a lot activity going on. Some of them can influence your
 code hot paths (for example HotSpot JIT compiler). So `ldt` allows you to execute test several times before starting real measurements:
 
-	bazhenov@home ldt -z full.qualified.test.name -w 10 -n 100 -c 4
+	bazhenov@home$ ldt -z full.qualified.test.name -w 10 -n 100 -c 4
 
 In this example we run test 110 times in each thread, but ten first executions of each thread will be droped out and do not influence history.
+
+Timeframe based testing
+=======================
+
+Instead of configuring test execution samples count you could just specifiy how long test should be executed (eg. 2 seconds). This is very convinient
+way of testing code especially when you do not know code throughtput in first place.
+
+	bazhenov@home ldt-assembly$ ldt -z com.farpost.ldt.HttpTask#get -p "url=http://baza.farpost.ru/" -t 2000
+	                     RESULTS                      
+	--------------------------------------------------
+	 Concurrency level             : 1
+	 Samples count                 : 6
+	 Total time                    : 2.139s
+	 Min. time                     : 289ms
+	 Max. time                     : 499ms
+	 Throughput                    : 2.8 tps
+
+In this example `ldt` repeat test execution until cummulative execution time overgrown 2 seconds.
 
 Test parameters
 ===============
@@ -164,7 +182,7 @@ Maven integration
 `ldt` automatically adds `target/classpath` directory to runtime classpath, so if you current working directory
 is a maven module you could run load tests after compiling maven module.
 
-	bazhenov@home maven-project$ mvn compile && ldt -z full.quialified.ClassName
+	bazhenov@home$ maven-project$ mvn compile && ldt -z full.quialified.ClassName
 
 Maven submodules are not supported at the moment.
 

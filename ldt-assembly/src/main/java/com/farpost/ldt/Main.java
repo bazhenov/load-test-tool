@@ -25,15 +25,17 @@ public class Main {
 		options.addOption("n", "count", true, "sample count");
 		options.addOption("w", "warmup-threshold", true, "warmup test execution count");
 		options.addOption("p", "parameters", true, "task parameters");
+		options.addOption("t", "timeframe", true, "timeframe testing range (in milliseconds)");
 		String fqnClass;
 		try {
 			CommandLineParser parser = new PosixParser();
 			CommandLine args = parser.parse(options, arg);
 
 			fqnClass = readString(args, 'z');
-			int concurrencyLevel = readInt(args, 'c', 1);
-			int sampleCount = readInt(args, 'n', 1);
-			int warmupThreshold = readInt(args, 'w', 10);
+			int concurrencyLevel = readPositiveInt(args, 'c', 1);
+			int sampleCount = readPositiveInt(args, 'n', 1);
+			int warmupThreshold = readNonNegativeInt(args, 'w', 10);
+			int timeframe = readNonNegativeInt(args, 't', 0);
 
 			ResultFormatter formatter = createFormatter(args.getOptionValue('r'));
 
@@ -44,9 +46,13 @@ public class Main {
 
 			TestRunner runner = new TestRunner();
 			runner.setConcurrencyLevel(concurrencyLevel);
-			runner.setThreadSamplesCount(sampleCount);
 			runner.setWarmUpThreshold(warmupThreshold);
-			
+			if ( timeframe > 0 ) {
+				runner.setTestInterruptionStarategy(new TimeFrameInteruptionStrategy(timeframe));
+			}else{
+				runner.setTestInterruptionStarategy(new CallCountInterruptionStrategy(sampleCount));
+			}
+
 			log.debug("Running tests for type: " + fqnClass);
 			TestResult result = runner.run(task);
 
@@ -109,14 +115,22 @@ public class Main {
 		return (type.getModifiers() & Modifier.ABSTRACT) != 0;
 	}
 
-	private static int readInt(CommandLine arg, char name, int defaultValue) throws ParseException {
-		int value = arg.getOptionValue(name) != null
+	private static int readPositiveInt(CommandLine arg, char name, int defaultValue) throws ParseException {
+		if ( arg.hasOption(name) ) {
+			int value = parseInt(arg.getOptionValue(name));
+			if (value < 0) {
+				throw new ParseException("Invalid value");
+			}
+			return value;
+		}else{
+			return defaultValue;
+		}
+	}
+
+	private static int readNonNegativeInt(CommandLine arg, char name, int defaultValue) throws ParseException {
+		return ( arg.hasOption(name) )
 			? parseInt(arg.getOptionValue(name))
 			: defaultValue;
-		if (value <= 0) {
-			throw new ParseException("Invalid value");
-		}
-		return value;
 	}
 
 	private static String readString(CommandLine arg, char name) throws ParseException {
