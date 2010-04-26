@@ -4,23 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Этот класс используется в {@link TestRunner} для того чтобы отслеживать результаты
- * тестов в отдельном потоке (worker'е). Результирующий {@link TestResult} конструируется на
- * основании объектов данного типа.
- * <p/>
+ * This class is used by {@link com.farpost.ldt.TestRunner} to track thread execution results.
+ * Resulting {@link com.farpost.ldt.TestResult} object us built upon a collection of such objects.
  * <pre>
  * --- idle
  * *** test execution
- * <p/>
  *          5ms     9ms     4ms     13ms
- * T1  |---*****-*********-****-*************--|
- * <p/>
+ * T1  |-*****-*********-****-*************-|
  *         3ms  6ms     7ms      11ms
- * T2  |---***-******-*******-***********------|
+ * T2  |-***-******-*******-***********-----|
  * </pre>
- * Выше приведена история выполнения двух нитей, каждая из которых выполнила 4 теста с
- * соответствующими временными задержками. Данный класс описывает историю выполнения тестов
- * одной отдельно взятой нити.
+ * There is sample thread execution history above. There is exactly two <code>ThreadTestHistory</code>
+ * objects with 4 test execution history each.
  */
 public class ThreadTestHistory {
 

@@ -3,9 +3,13 @@ package com.farpost.ldt;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
+
+import static java.lang.Math.pow;
+import static java.lang.Math.sqrt;
 
 public class TestRunner {
 
@@ -104,6 +108,19 @@ public class TestRunner {
 		warmUpThreshold = times;
 	}
 
+	public static double calculateStdDev(long[] numbers) {
+		long sum = 0;
+		for (long number : numbers) {
+			sum += number;
+		}
+		double avarage = sum / numbers.length;
+		double mean = 0;
+		for (long number : numbers) {
+			mean += pow(number - avarage, 2);
+		}
+		return sqrt(mean / numbers.length);
+	}
+
 	/**
 	 * Worker Ñ a thread runnable which perform actual measurements
 	 */
@@ -134,7 +151,7 @@ public class TestRunner {
 				do {
 					runningTime = runAndMeasure(task);
 					threadTestHistory.registerSample(runningTime);
-				} while ( strategy.shouldContinue(runningTime) );
+				} while (strategy.shouldContinue(runningTime));
 				syncBarrier.await();
 			} catch (BrokenBarrierException e) {
 				log.error(e.getMessage(), e);
@@ -145,7 +162,7 @@ public class TestRunner {
 
 		/**
 		 * Run task and return it's execution time in microseconds.
-		 *
+		 * <p/>
 		 * {@link System#nanoTime()} used for measurments. This method provides nothrow guarantee.
 		 *
 		 * @param task testing task
