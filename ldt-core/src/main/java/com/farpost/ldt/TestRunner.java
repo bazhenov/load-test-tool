@@ -110,15 +110,13 @@ public class TestRunner {
 
 	public static double calculateStdDev(long[] numbers) {
 		long sum = 0;
+		long mean = 0;
 		for (long number : numbers) {
 			sum += number;
+			mean += pow(number, 2);
 		}
 		double avarage = sum / numbers.length;
-		double mean = 0;
-		for (long number : numbers) {
-			mean += pow(number - avarage, 2);
-		}
-		return sqrt(mean / numbers.length);
+		return sqrt(mean / numbers.length - pow(avarage, 2));
 	}
 
 	/**
