@@ -6,17 +6,23 @@ public class TestResult {
 
 	private final int concurrencyLevel;
 	private final List<ThreadTestHistory> threadsHistory;
+	private final long stdDev;
 	private long totalTime;
+
 	private int threadSamplesCount;
-  private long maxTime = 0;
+	private long maxTime = 0;
 	private long minTime = Long.MAX_VALUE;
 
 	public TestResult(List<ThreadTestHistory> threadsHistory) {
 		this.threadsHistory = threadsHistory;
 		this.concurrencyLevel = threadsHistory.size();
-		for ( ThreadTestHistory threadHistory : threadsHistory ) {
+		long[][] executionTimes = new long[concurrencyLevel][];
+		for (int i = 0; i < threadsHistory.size(); i++) {
+			ThreadTestHistory threadHistory = threadsHistory.get(i);
+			executionTimes[i] = threadHistory.getSamples();
 			mergeHistory(threadHistory);
 		}
+		stdDev = (long) TestRunner.calculateStdDev(executionTimes);
 	}
 
 	public int getConcurrencyLevel() {
@@ -37,14 +43,14 @@ public class TestResult {
 
 	private void mergeHistory(ThreadTestHistory threadHistory) {
 		threadSamplesCount += threadHistory.getSamples().length;
-		if ( threadHistory.getTotalTime() > totalTime ) {
+		if (threadHistory.getTotalTime() > totalTime) {
 			totalTime = threadHistory.getTotalTime();
 		}
-		for ( long time : threadHistory.getSamples() ) {
-			if ( time < minTime ) {
+		for (long time : threadHistory.getSamples()) {
+			if (time < minTime) {
 				minTime = time;
 			}
-			if ( time > maxTime ) {
+			if (time > maxTime) {
 				maxTime = time;
 			}
 		}
@@ -52,6 +58,10 @@ public class TestResult {
 
 	public List<ThreadTestHistory> getThreadsHistory() {
 		return threadsHistory;
+	}
+
+	public long getStandardDeviation() {
+		return stdDev;
 	}
 
 	public int getThreadSamplesCount() {
