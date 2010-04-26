@@ -30,6 +30,8 @@ directory where `ldt` will be installed:
 	 -n,--count <arg>               sample count
 	 -p,--parameters <arg>          task parameters
 	 -r,--result-printer <arg>      result printer type (plain, log)
+	 -t,--timeframe <arg>           timeframe testing range (in milliseconds)
+	 -w,--warmup-threshold <arg>    warmup test execution count
 	 -z,--clazz <arg>               full qualified test class name
 	bazhenov@home Developer$ ldt -z com.farpost.ldt.Sleep -c 2 -n 10
 	                     RESULTS                      
@@ -39,6 +41,7 @@ directory where `ldt` will be installed:
 	 Total time                    : 3.5s
 	 Min. time                     : 300ms
 	 Max. time                     : 304ms
+	 Std. dev.                     : ~349mcs
 	 Throughput                    : 6.7 tps
 
 You could use alias or some another way to publish `ldt.sh` script in your shell environment (`ln -s` is good way to start).
