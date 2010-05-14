@@ -1,0 +1,8 @@
+Package: load-test-tool
+Version: 1.0-1
+Section: base
+Priority: optional
+Architecture: all
+Maintainer: Denis Bazhenov <dotsid@gmail.com>
+Depends: sun-java6-jre (>= 6.20dlj-1ubuntu3)
+Description: Simple load testing tool for JVM based modules
