@@ -1,0 +1,2 @@
+#!/bin/sh
+ln -sf /usr/share/load-test-tool/bin/ldt.sh /usr/bin/ldt

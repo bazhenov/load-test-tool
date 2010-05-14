@@ -12,7 +12,7 @@ mv $TMP/usr/share/ldt-assembly-1.0-SNAPSHOT $TMP/usr/share/load-test-tool
 
 # Copying debian manifest
 mkdir -p $TMP/DEBIAN
-cp debian/control $TMP/DEBIAN
+cp debian/* $TMP/DEBIAN
 
 # Building package
 dpkg-deb -b $TMP
