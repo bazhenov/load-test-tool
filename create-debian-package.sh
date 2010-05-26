@@ -16,7 +16,7 @@ cp debian/* $TMP/DEBIAN
 
 # Copying man pages
 mkdir -p $TMP/usr/share/man/man1
-tar -czf $TMP/usr/share/man/man1/ldt.1.gz ldt.1
+gzip -c ldt.1 > $TMP/usr/share/man/man1/ldt.1.gz
 
 # Building package
 dpkg-deb -b $TMP
