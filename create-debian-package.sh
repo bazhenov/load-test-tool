@@ -1,6 +1,6 @@
 #!/bin/sh
 
-TMP=/tmp/load-test-tool-1.0-1
+TMP=/tmp/load-test-tool-1.0-2
 
 # Prepare build environment
 rm -rf $TMP
