@@ -1,0 +1,63 @@
+.TH ldt 1 "16 May 2010" "version 1.0"
+
+.SH NAME
+.P
+ldt - load test your JVM application
+
+.SH SYNOPSIS
+.P
+.B ldt
+.RI [ OPTIONS ]
+.B -z FQN_TEST_NAME
+
+.SH DESCRIPTION
+Simple but powerful command line tool for load testing your Java modules.
+It has simple API that allows you to define testing tasks.
+It have concept similar to JUnit/TestNG tests but with concentration on performance measurements in concurrent environment.
+
+.SH OPTIONS
+
+.TP
+.BI -z " FQN_CLASS_NAME
+Sets full qualified test address. Test address contains full qualified class name and local method name. For example:
+.BI org.company.test.FooTestCase#testA
+
+.TP
+.BI -c " NUM" ", --concurrency-level=" NUM
+Set test concurrency level. Concurrency level is number of threads which are execute test code simultaneously.
+
+.TP
+.BI -n " NUM" ", --count=" NUM
+Set the sample count. Sample count is number which determine how many times each thread will execute test case.
+
+.TP
+.BI -n " NUM" ", --count=" NUM
+Set the sample count. Sample count is number which determine how many times each thread will execute test case.
+
+.TP
+.BI -p " PARAMETERS" ", --parameters=" PARAMETERS
+Parameters are parsed and injected in test case. For more information on parameters read section
+.B PARAMETERS
+.
+
+.TP
+.BI -r " TYPE" ", --result-printer=" TYPE
+Print test result with given result printer. At the moment only two result printers are allowed:
+.br
+.B plain
+- prints overall information
+.br
+.B log
+- print detailed log ot test execution elapsed time
+
+.TP
+.BI -t " NUM" ", --timeframe=" NUM
+Timeframe testing range (in milliseconds). This option if set tells ldt to execute test not certain number of times
+but for given timespan.
+
+.TP
+.BI -w " NUM" ", --warmup-threshold=" NUM
+Warmup test execution count. This option determine how much times test should be executed before actual measurements will be started.
+
+.SH AUTHOR
+Denis Bazhenov <bazhenov@farpost.com>

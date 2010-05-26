@@ -14,6 +14,10 @@ mv $TMP/usr/share/ldt-assembly-1.0-SNAPSHOT $TMP/usr/share/load-test-tool
 mkdir -p $TMP/DEBIAN
 cp debian/* $TMP/DEBIAN
 
+# Copying man pages
+mkdir -p $TMP/usr/share/man/man1
+tar -czf $TMP/usr/share/man/man1/ldt.1.gz ldt.1
+
 # Building package
 dpkg-deb -b $TMP
 mv $TMP.deb .
