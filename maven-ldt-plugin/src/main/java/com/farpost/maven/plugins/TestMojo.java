@@ -12,6 +12,10 @@ import org.apache.maven.plugin.logging.Log;
 import static com.farpost.ldt.TaskFactory.createTask;
 
 /**
+ * Implementation of ldt:test goal.
+ *
+ * This goal uses ldt API for executing given task.
+ *
  * @goal test
  * @phase process-sources
  */
@@ -28,14 +32,21 @@ public class TestMojo extends AbstractMojo {
 	/**
 	 * Concurrency level
 	 *
-	 * @parameter expression="${ldt.concurrency}"
+	 * @parameter expression="${ldt.concurrencyLevel}"
 	 */
 	private int concurrencyLevel = 1;
+
+	/**
+	 * Call count
+	 *
+	 * @parameter expression="${ldt.callCount}"
+	 */
+	private int callCount = 1;
 
 	public void execute() throws MojoExecutionException {
 		TestRunner runner = new TestRunner();
 		runner.setConcurrencyLevel(concurrencyLevel);
-		runner.setTestInterruptionStarategy(new CallCountInterruptionStrategy(100));
+		runner.setTestInterruptionStarategy(new CallCountInterruptionStrategy(callCount));
 
 		Log log = getLog();
 		log.debug("Running tests for type: " + testName);

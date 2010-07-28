@@ -8,10 +8,11 @@ import java.io.PrintStream;
 
 import static com.farpost.ldt.formatter.PlainResultFormatter.formatTime;
 
+/**
+ * {@link ResultFormatter} implementation similar to {@link com.farpost.ldt.formatter.PlainResultFormatter}
+ * but {@link Log} class using for output.
+ */
 public class MavenLogFormatter implements ResultFormatter {
-	private static final long MS = 1000;
-	private static final long SEC = 1000000;
-	private static final long MIN = 60000000;
 
 	private final Log out;
 

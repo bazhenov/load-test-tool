@@ -5,16 +5,25 @@ Simple but powerful command line tool for load testing your Java modules. It has
 testing tasks. It have concept similar to JUnit/TestNG tests but with concentration on performance measurements in concurrent
 environment.
 
+Installing
+==========
+
+If you use Debian based OS (Ubuntu, for example), you could simply download `.deb` package from: http://github.com/bazhenov/load-test-tool/downloads
+
+Then you should execute:
+
+	# dpkg -i load-test-tool-1.0-2.deb
+
 Building
 ========
 You need nothing more but maven for building load test tool.
 	
-	bazhenov@home load-test-tool$ mvn package
+	$ mvn package
 
 After building you will have `.tar.gz` artifact in `ldt-assembly/target` directory. You should unpack it in some
 directory where `ldt` will be installed:
 
-	bazhenov@home Developer$ tar xvf ldt-assembly-1.0-SNAPSHOT.tar.gz
+	$ tar xvf ldt-assembly-1.0-SNAPSHOT.tar.gz
 	x ldt-assembly-1.0-SNAPSHOT/bin/ldt.sh
 	x ldt-assembly-1.0-SNAPSHOT/bin/install.sh
 	x ldt-assembly-1.0-SNAPSHOT/lib/ldt-core-1.0-SNAPSHOT.jar
@@ -23,8 +32,8 @@ directory where `ldt` will be installed:
 	x ldt-assembly-1.0-SNAPSHOT/lib/commons-cli-1.1.jar
 	x ldt-assembly-1.0-SNAPSHOT/lib/log4j-1.2.14.jar
 	x ldt-assembly-1.0-SNAPSHOT/lib/ldt-assembly-1.0-SNAPSHOT.jar
-	bazhenov@home Developer$ alias ldt="~/Developer/ldt-assembly-1.0-SNAPSHOT/bin/ldt.sh"
-	bazhenov@home Developer$ ldt
+	$ alias ldt="~/Developer/ldt-assembly-1.0-SNAPSHOT/bin/ldt.sh"
+	$ ldt
 	usage: ltd
 	 -c,--concurrency-level <arg>   concurrency level
 	 -n,--count <arg>               sample count
@@ -33,7 +42,7 @@ directory where `ldt` will be installed:
 	 -t,--timeframe <arg>           timeframe testing range (in milliseconds)
 	 -w,--warmup-threshold <arg>    warmup test execution count
 	 -z,--clazz <arg>               full qualified test class name
-	bazhenov@home Developer$ ldt -z com.farpost.ldt.Sleep -c 2 -n 10
+	$ ldt -z com.farpost.ldt.Sleep -c 2 -n 10
 	                     RESULTS                      
 	--------------------------------------------------
 	 Concurrency level             : 2
@@ -60,25 +69,25 @@ Task running
 
 Method `execute()` called when you pass `MathTest` as a class name. 
 
-	bazhenov@home$ ldt -z org.mypackage.MathTest
+	$ ldt -z org.mypackage.MathTest
 
 This command will run tests and display execution statistic. It worth to mention that `ldt` automatically add current directory to classpath.
 
 You could ajust concurrency level and thread sample count (task repeat count)
 
-	bazhenov@home$ ldt -z full.quialified.ClassName -c 2 -n 100
+	$ ldt -z full.quialified.ClassName -c 2 -n 100
 
 In this example test defined in a class will be run in two separate threads 100 times in each thread.
 
 If test class contains several tests (cases) you could choose which to run with following syntax:
 
-	bazhenov@home$ ldt -z full.quialified.ClassName#test1
+	$ ldt -z full.quialified.ClassName#test1
 
 Strictly speaking test address `full.quialified.ClassName` equals to `full.quialified.ClassName#execute`.
 
 `ldt` distribution contains several standard tasks. For example `HttpTask` for testing throughput of http services:
 
-	bazhenov@home$ ldt -z com.farpost.ldt.HttpTask#get -p "url=http://google.com/" -n 10 -r log
+	$ ldt -z com.farpost.ldt.HttpTask#get -p "url=http://google.com/" -n 10 -r log
 	1448
 	1011
 	997
@@ -124,7 +133,7 @@ There are some reasons why in complex environments such as JVM you could want to
 resulting statistic). At the moment when JVM is started and run yor code, there are a lot activity going on. Some of them can influence your
 code hot paths (for example HotSpot JIT compiler). So `ldt` allows you to execute test several times before starting real measurements:
 
-	bazhenov@home$ ldt -z full.qualified.test.name -w 10 -n 100 -c 4
+	$ ldt -z full.qualified.test.name -w 10 -n 100 -c 4
 
 In this example we run test 110 times in each thread, but ten first executions of each thread will be droped out and do not influence history.
 
@@ -134,7 +143,7 @@ Timeframe based testing
 Instead of configuring test execution samples count you could just specifiy how long test should be executed (eg. 2 seconds). This is very convinient
 way of testing code especially when you do not know code throughtput in first place.
 
-	bazhenov@home ldt-assembly$ ldt -z com.farpost.ldt.HttpTask#get -p "url=http://baza.farpost.ru/" -t 2000
+	$ ldt -z com.farpost.ldt.HttpTask#get -p "url=http://baza.farpost.ru/" -t 2000
 	                     RESULTS                      
 	--------------------------------------------------
 	 Concurrency level             : 1
@@ -171,23 +180,50 @@ Sometimes there is need to pass some parameters to a test. Suppose following tes
 
 For passing url value in test we could use following command (parameters should be separated with comma):
 
-	bazhenov@home$ ldt -z org.mypackage.HttpRequestTest -p "url=http://host.com, timeout=3000"
+	$ ldt -z org.mypackage.HttpRequestTest -p "url=http://host.com, timeout=3000"
 
 JVM startup options
 ===================
 In some cases you want to pass additional parameters to JVM when starting test (eg. heap size):
 
-	bazhenov@home$ JAVA_OPTS="Xmx512M" ldt -z path.to.Test
+	$ JAVA_OPTS="Xmx512M" ldt -z path.to.Test
 
 Maven integration
 =================
 
-`ldt` automatically adds `target/classpath` directory to runtime classpath, so if you current working directory
-is a maven module you could run load tests after compiling maven module.
+`ldt` have full maven integration via maven plugin. At the moment you should build maven plugin by itself. Using maven is simply as:
 
-	bazhenov@home$ maven-project$ mvn compile && ldt -z full.quialified.ClassName
+	$ mvn install
 
-Maven submodules are not supported at the moment.
+`ldt` have no heavy dependency list, so you shouldn't have any problems.
+
+Then you should configure plugin in your `pom.xml`:
+
+	<project>
+
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>com.farpost.maven.plugins</groupId>
+					<artifactId>maven-ldt-plugin</artifactId>
+					<configuration>
+						<testName>com.farpost.test.ExampleTest</testName>
+						<concurrencyLevel>3</concurrencyLevel>
+						<callCount>1000</callCount>
+					</configuration>
+				</plugin>
+			</plugins>
+	</project>
+
+At this point you should be able to run:
+
+	$ mvn ldt:test
+
+and view test results
+
+You also can pass `ldt` parameters from console line instead of `pom.xml`:
+
+	$ mvn ldt:test -Dldt.testName=com.farpost.test.ExampleTest -Dldt.concurrencyLevel=10 -Dldt.callCount=1000
 
 License
 =======
