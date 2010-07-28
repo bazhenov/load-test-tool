@@ -191,7 +191,7 @@ In some cases you want to pass additional parameters to JVM when starting test (
 Maven integration
 =================
 
-`ldt` have full maven integration via maven plugin. At the moment you should build maven plugin by itself. Using maven is simply as:
+`ldt` have full maven integration via maven plugin. At the moment you should build maven plugin by itself. Using maven this is as simply as:
 
 	$ mvn install
 
