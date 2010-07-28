@@ -8,11 +8,6 @@
       <outputDirectory>bin</outputDirectory>
       <fileMode>755</fileMode>
     </file>
-    <file>
-      <source>${basedir}/assembly/bin/install.sh</source>
-      <outputDirectory>bin</outputDirectory>
-      <fileMode>755</fileMode>
-    </file>
   </files>
 
   <dependencySets>

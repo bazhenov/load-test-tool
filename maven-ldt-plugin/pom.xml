@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+				 xmlns="http://maven.apache.org/POM/4.0.0"
+				 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>ldt-parent</artifactId>
+		<groupId>com.farpost.ldt</groupId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
+	<groupId>com.farpost.maven.plugins</groupId>
+	<artifactId>maven-ldt-plugin</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<packaging>maven-plugin</packaging>
+	<name>maven-ldt-plugin Maven Mojo</name>
+	<url>http://maven.apache.org</url>
+	<dependencies>
+		<dependency>
+			<groupId>com.farpost.ldt</groupId>
+			<artifactId>ldt-core</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-plugin-api</artifactId>
+			<version>2.0</version>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.farpost.maven.plugins</groupId>
+				<artifactId>maven-ldt-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+</project>

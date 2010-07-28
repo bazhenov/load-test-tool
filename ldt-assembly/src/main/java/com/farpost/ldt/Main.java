@@ -6,7 +6,6 @@ import com.farpost.ldt.formatter.ResultFormatter;
 import org.apache.commons.cli.*;
 import org.apache.log4j.Logger;
 
-import java.lang.reflect.*;
 import java.util.Map;
 
 import static java.lang.Integer.parseInt;
@@ -27,6 +26,7 @@ public class Main {
 		options.addOption("p", "parameters", true, "task parameters");
 		options.addOption("t", "timeframe", true, "timeframe testing range (in milliseconds)");
 		String fqnClass;
+
 		try {
 			CommandLineParser parser = new PosixParser();
 			CommandLine args = parser.parse(options, arg);
@@ -39,7 +39,7 @@ public class Main {
 
 			ResultFormatter formatter = createFormatter(args.getOptionValue('r'));
 
-			Task task = createTask(fqnClass);
+			Task task = TaskFactory.createTask(fqnClass);
 			if (args.hasOption('p')) {
 				injectParameters(task, args.getOptionValue('p'));
 			}
@@ -47,9 +47,9 @@ public class Main {
 			TestRunner runner = new TestRunner();
 			runner.setConcurrencyLevel(concurrencyLevel);
 			runner.setWarmUpThreshold(warmupThreshold);
-			if ( timeframe > 0 ) {
+			if (timeframe > 0) {
 				runner.setTestInterruptionStarategy(new TimeFrameInteruptionStrategy(timeframe));
-			}else{
+			} else {
 				runner.setTestInterruptionStarategy(new CallCountInterruptionStrategy(sampleCount));
 			}
 
@@ -78,57 +78,27 @@ public class Main {
 	private static ResultFormatter createFormatter(String type) {
 		if ("plain".equalsIgnoreCase(type) || type == null) {
 			return new PlainResultFormatter(System.out);
-		}else if ("log".equalsIgnoreCase(type)) {
+		} else if ("log".equalsIgnoreCase(type)) {
 			return new ElapsedTimeLogResultFormatter(System.out);
 		} else {
 			throw new RuntimeException("Invalid formatter type: " + type);
 		}
 	}
 
-	private static Task createTask(String fqnClass)
-		throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException,
-		InvocationTargetException {
-
-		String methodName = null;
-		if (fqnClass.contains("#")) {
-			String[] parts = fqnClass.split("#", 2);
-			fqnClass = parts[0];
-			methodName = parts[1];
-		}
-		Class<?> type = Class.forName(fqnClass);
-
-		if (isAbstract(type)) {
-			error(type.getName() + " should not be not abstract class nor interface");
-		}
-
-		Object o = type.getConstructor().newInstance();
-		if ( Task.class.isAssignableFrom(type) && methodName == null ) {
-			return (Task) o;
-		}else{
-			return methodName == null
-				? new PojoTask<Object>(o)
-				: new PojoTask<Object>(o, methodName);
-		}
-	}
-
-	private static boolean isAbstract(Class<?> type) {
-		return (type.getModifiers() & Modifier.ABSTRACT) != 0;
-	}
-
 	private static int readPositiveInt(CommandLine arg, char name, int defaultValue) throws ParseException {
-		if ( arg.hasOption(name) ) {
+		if (arg.hasOption(name)) {
 			int value = parseInt(arg.getOptionValue(name));
 			if (value < 0) {
 				throw new ParseException("Invalid value");
 			}
 			return value;
-		}else{
+		} else {
 			return defaultValue;
 		}
 	}
 
 	private static int readNonNegativeInt(CommandLine arg, char name, int defaultValue) throws ParseException {
-		return ( arg.hasOption(name) )
+		return (arg.hasOption(name))
 			? parseInt(arg.getOptionValue(name))
 			: defaultValue;
 	}
