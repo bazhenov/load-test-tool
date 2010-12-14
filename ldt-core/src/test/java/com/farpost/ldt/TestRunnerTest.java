@@ -97,10 +97,4 @@ public class TestRunnerTest {
 		runner.run(task);
 		verify(task);
 	}
-
-	@Test
-	public void testRunnerCanCalculateStandardDeviation() {
-		long[][] numbers = new long[][]{{2, 4, 4, 4, 5, 5, 7, 9}};
-		assertThat(TestRunner.calculateStdDev(numbers), equalTo(2d));
-	}
 }

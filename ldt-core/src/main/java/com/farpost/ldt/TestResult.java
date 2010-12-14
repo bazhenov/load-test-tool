@@ -2,6 +2,8 @@ package com.farpost.ldt;
 
 import java.util.*;
 
+import static com.farpost.ldt.Utils.calculateStdDev;
+
 public class TestResult {
 
 	private final int concurrencyLevel;
@@ -22,7 +24,7 @@ public class TestResult {
 			executionTimes[i] = threadHistory.getSamples();
 			mergeHistory(threadHistory);
 		}
-		stdDev = (long) TestRunner.calculateStdDev(executionTimes);
+		stdDev = (long) calculateStdDev(executionTimes);
 	}
 
 	public int getConcurrencyLevel() {
@@ -42,17 +44,16 @@ public class TestResult {
 	}
 
 	private void mergeHistory(ThreadTestHistory threadHistory) {
-		threadSamplesCount += threadHistory.getSamples().length;
+		threadSamplesCount += threadHistory.getSamplesCount();
+
 		if (threadHistory.getTotalTime() > totalTime) {
 			totalTime = threadHistory.getTotalTime();
 		}
-		for (long time : threadHistory.getSamples()) {
-			if (time < minTime) {
-				minTime = time;
-			}
-			if (time > maxTime) {
-				maxTime = time;
-			}
+		if (threadHistory.getMaximumExecutionTime() > maxTime) {
+			maxTime = threadHistory.getMaximumExecutionTime();
+		}
+		if (threadHistory.getMaximumExecutionTime() > minTime) {
+			minTime = threadHistory.getMinimumExecutionTime();
 		}
 	}
 
