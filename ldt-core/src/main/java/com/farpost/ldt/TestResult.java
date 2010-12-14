@@ -3,6 +3,7 @@ package com.farpost.ldt;
 import java.util.*;
 
 import static com.farpost.ldt.Utils.calculateStdDev;
+import static java.util.Arrays.asList;
 
 public class TestResult {
 
@@ -11,7 +12,7 @@ public class TestResult {
 	private final long stdDev;
 	private long totalTime;
 
-	private int threadSamplesCount;
+	private int samplesCount;
 	private long maxTime = 0;
 	private long minTime = Long.MAX_VALUE;
 
@@ -25,6 +26,10 @@ public class TestResult {
 			mergeHistory(threadHistory);
 		}
 		stdDev = (long) calculateStdDev(executionTimes);
+	}
+
+	public TestResult(ThreadTestHistory... threadsHistory) {
+		this(asList(threadsHistory));
 	}
 
 	public int getConcurrencyLevel() {
@@ -44,16 +49,16 @@ public class TestResult {
 	}
 
 	private void mergeHistory(ThreadTestHistory threadHistory) {
-		threadSamplesCount += threadHistory.getSamplesCount();
+		samplesCount += threadHistory.getSamplesCount();
 
 		if (threadHistory.getTotalTime() > totalTime) {
 			totalTime = threadHistory.getTotalTime();
 		}
-		if (threadHistory.getMaximumExecutionTime() > maxTime) {
-			maxTime = threadHistory.getMaximumExecutionTime();
+		if (threadHistory.getMaxTime() > maxTime) {
+			maxTime = threadHistory.getMaxTime();
 		}
-		if (threadHistory.getMaximumExecutionTime() > minTime) {
-			minTime = threadHistory.getMinimumExecutionTime();
+		if (threadHistory.getMinTime() < minTime) {
+			minTime = threadHistory.getMinTime();
 		}
 	}
 
@@ -65,13 +70,13 @@ public class TestResult {
 		return stdDev;
 	}
 
-	public int getThreadSamplesCount() {
-		return threadSamplesCount;
+	public int getSamplesCount() {
+		return samplesCount;
 	}
 
 	public float getThroughput() {
 		return totalTime == 0
 			? 0
-			: 1000000f / totalTime * threadSamplesCount;
+			: 1000000f / totalTime * samplesCount;
 	}
 }

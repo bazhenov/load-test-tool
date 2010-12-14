@@ -43,7 +43,7 @@ public class TestRunnerTest {
 		TestResult result = runner.run(task);
 
 		assertThat(result.getConcurrencyLevel(), equalTo(concurrencyLevel));
-		assertThat(result.getThreadSamplesCount(), equalTo(samples * concurrencyLevel));
+		assertThat(result.getSamplesCount(), equalTo(samples * concurrencyLevel));
 		assertThat(result.getTotalTime(), near(samples * delay * 1000, 10 * 1000));
 	}
 

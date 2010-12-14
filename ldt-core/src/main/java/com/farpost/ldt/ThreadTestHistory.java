@@ -20,8 +20,8 @@ import java.util.List;
 public class ThreadTestHistory {
 
 	private final List<Long> samples = new ArrayList<Long>();
-	private long maximumExecutionTime = 0;
-	private long minimumExecutionTime = 0;
+	private long maxTime = 0;
+	private long minTime = 0;
 
 	/**
 	 * @return total execution time in microseconds
@@ -44,21 +44,21 @@ public class ThreadTestHistory {
 
 	public void registerSample(long time) {
 		if (samples.isEmpty()) {
-			maximumExecutionTime = minimumExecutionTime = time;
-		}else if (time > maximumExecutionTime) {
-			maximumExecutionTime = time;
-		}else if (time < minimumExecutionTime) {
-			minimumExecutionTime = time;
+			maxTime = minTime = time;
+		}else if (time > maxTime) {
+			maxTime = time;
+		}else if (time < minTime) {
+			minTime = time;
 		}
 		samples.add(time);
 	}
 
-	public long getMaximumExecutionTime() {
-		return maximumExecutionTime;
+	public long getMaxTime() {
+		return maxTime;
 	}
 
-	public long getMinimumExecutionTime() {
-		return minimumExecutionTime;
+	public long getMinTime() {
+		return minTime;
 	}
 
 	public int getSamplesCount() {

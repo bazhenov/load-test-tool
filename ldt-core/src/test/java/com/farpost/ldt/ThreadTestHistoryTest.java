@@ -15,7 +15,7 @@ public class ThreadTestHistoryTest {
 		history.registerSample(8);
 		history.registerSample(2);
 
-		assertThat(history.getMaximumExecutionTime(), equalTo(145L));
-		assertThat(history.getMinimumExecutionTime(), equalTo(2L));
+		assertThat(history.getMaxTime(), equalTo(145L));
+		assertThat(history.getMinTime(), equalTo(2L));
 	}
 }
