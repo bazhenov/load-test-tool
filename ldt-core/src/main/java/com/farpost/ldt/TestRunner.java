@@ -9,6 +9,8 @@ import java.util.concurrent.CyclicBarrier;
 
 import static java.lang.Math.pow;
 import static java.lang.Math.sqrt;
+import static java.lang.System.nanoTime;
+import static java.lang.Thread.currentThread;
 
 /**
  * This class runs the tests, measure test elapsed time and build thread execution history.
@@ -17,18 +19,20 @@ import static java.lang.Math.sqrt;
  */
 public class TestRunner {
 
-	private int concurrencyLevel = 1;
-	private int threadSamplesCount = 1;
-	private int warmUpThreshold = 10;
-	private TestInterruptionStrategy testInterruptionStarategy = new CallCountInterruptionStrategy(1);
+	private volatile int concurrencyLevel = 1;
+	private volatile int threadSamplesCount = 1;
+	private volatile int warmUpThreshold = 10;
+	private volatile TestInterruptionStrategy testInterruptionStarategy = new CallCountInterruptionStrategy(1);
 
 	private static final Logger log = Logger.getLogger(TestRunner.class);
 
 	public synchronized TestResult run(Task task) throws InterruptedException {
 		prepare(task);
+		// Saving concurrency level locally, so now we are safe agains concurrent changes of this.concurrencyLevel
+		int threadPoolSize = concurrencyLevel;
 		try {
-			CyclicBarrier sync = new CyclicBarrier(concurrencyLevel + 1);
-			List<Worker> workers = spawnWorkers(task, concurrencyLevel, threadSamplesCount, warmUpThreshold, sync);
+			CyclicBarrier sync = new CyclicBarrier(threadPoolSize + 1);
+			List<Worker> workers = spawnWorkers(task, threadPoolSize, warmUpThreshold, sync);
 			startAndWaitForComplete(sync);
 
 			List<ThreadTestHistory> threadHistory = collectExecutionHistory(workers);
@@ -50,10 +54,18 @@ public class TestRunner {
 		this.testInterruptionStarategy = strategy;
 	}
 
-	private void startAndWaitForComplete(CyclicBarrier syncBarrier) throws InterruptedException {
+	/**
+	 * Release all working threads and waits them to complete their job using shared {@link CyclicBarrier}.
+	 *
+	 * @param sync shared barrier
+	 * @throws InterruptedException if thread was interrupted
+	 */
+	private void startAndWaitForComplete(CyclicBarrier sync) throws InterruptedException {
 		try {
-			syncBarrier.await();
-			syncBarrier.await();
+			// Releasing worker threads
+			sync.await();
+			// Waiting to complete
+			sync.await();
 		} catch (BrokenBarrierException e) {
 			throw new TestExecutionException(e);
 		}
@@ -67,12 +79,12 @@ public class TestRunner {
 		return threadsHistory;
 	}
 
-	private List<Worker> spawnWorkers(Task task, int concurrencyLevel, int samplesCount, int warmUpThreshold, CyclicBarrier syncBarrier) {
-		List<Worker> workerList = new ArrayList<Worker>(concurrencyLevel);
-		for (int i = 0; i < concurrencyLevel; i++) {
-			Worker worker = new Worker(task, testInterruptionStarategy, warmUpThreshold, syncBarrier);
+	private List<Worker> spawnWorkers(Task task, int threadPoolSize, int warmUpThreshold, CyclicBarrier sync) {
+		List<Worker> workerList = new ArrayList<Worker>(threadPoolSize);
+		for (int i = 0; i < threadPoolSize; i++) {
+			Worker worker = new Worker(task, testInterruptionStarategy, warmUpThreshold, sync);
 			workerList.add(worker);
-			new Thread(worker).start();
+			new Thread(worker, "LDT Thread #" + i).start();
 		}
 		return workerList;
 	}
@@ -96,9 +108,9 @@ public class TestRunner {
 	/**
 	 * Setting warm up threshold for test runner.
 	 * <p/>
-	 * Warm up threshold is positive number how many times test will be executed before measurements are started.
-	 * Warm up period allow more accuratly measure execution statistic as first test executions may be diversed
-	 * by HotSpot compiller and other JVM activity.
+	 * Warm up threshold is positive number how many times test will be executed <i>by each worker thread</i>
+	 * before measurements are started. Warm up period allow more accuratly measure execution statistic as
+	 * first test executions may be diversed by HotSpot compiller and other JVM activity.
 	 * <p/>
 	 * Warm up default value is 10.
 	 *
@@ -116,7 +128,7 @@ public class TestRunner {
 		long sum = 0;
 		long mean = 0;
 		int count = 0;
-		for ( long[] row : numbers ) {
+		for (long[] row : numbers) {
 			count += row.length;
 			for (long number : row) {
 				sum += number;
@@ -128,7 +140,7 @@ public class TestRunner {
 	}
 
 	/**
-	 * Worker Ñ a thread runnable which perform actual measurements
+	 * Worker thread runnable which perform actual measurements
 	 */
 	private static class Worker implements Runnable {
 
@@ -163,6 +175,7 @@ public class TestRunner {
 				log.error(e.getMessage(), e);
 			} catch (InterruptedException e) {
 				log.error(e.getMessage(), e);
+				currentThread().interrupt();
 			}
 		}
 
@@ -172,20 +185,18 @@ public class TestRunner {
 		 * {@link System#nanoTime()} used for measurments. This method provides nothrow guarantee.
 		 *
 		 * @param task testing task
-		 * @return task execution time
+		 * @return task execution time in microseconds
 		 */
 		private long runAndMeasure(Task task) {
-			long startTime = System.nanoTime();
+			long endTime, startTime = nanoTime();
 			try {
 				task.execute();
-				long endTime = System.nanoTime();
-				return (endTime - startTime) / 1000;
-
 			} catch (Exception e) {
-				long endTime = System.nanoTime();
 				log.error("Task execution failed", e);
-				return (endTime - startTime) / 1000;
+			} finally {
+				endTime = nanoTime();
 			}
+			return (endTime - startTime) / 1000;
 		}
 
 		public ThreadTestHistory getTestResult() {

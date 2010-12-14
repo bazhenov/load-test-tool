@@ -11,9 +11,9 @@
 	<groupId>com.farpost.maven.plugins</groupId>
 	<artifactId>maven-ldt-plugin</artifactId>
 	<version>1.0-SNAPSHOT</version>
+	<name>Load Test Tool Maven plugin</name>
 	<packaging>maven-plugin</packaging>
-	<name>maven-ldt-plugin Maven Mojo</name>
-	<url>http://maven.apache.org</url>
+
 	<dependencies>
 		<dependency>
 			<groupId>com.farpost.ldt</groupId>
@@ -26,12 +26,5 @@
 			<version>2.0</version>
 		</dependency>
 	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>com.farpost.maven.plugins</groupId>
-				<artifactId>maven-ldt-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
+
 </project>
