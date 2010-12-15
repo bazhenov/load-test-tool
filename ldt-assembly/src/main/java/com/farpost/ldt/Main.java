@@ -25,7 +25,7 @@ public class Main {
 
 			String fqnClass = readString(args, 'z');
 			int concurrencyLevel = readPositiveInt(args, 'c', 1);
-			int sampleCount = readPositiveInt(args, 'n', 1);
+			int sampleCount = readPositiveInt(args, 'n', 0);
 			int warmupThreshold = readNonNegativeInt(args, 'w', 10);
 			int timeframe = readNonNegativeInt(args, 't', 0);
 
