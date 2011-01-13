@@ -19,7 +19,7 @@ public class ElapsedTimeLogResultFormatter implements ResultFormatter {
 
 	public void format(TestResult result) {
 		List<ThreadTestHistory> threadsHistory = result.getThreadsHistory();
-		int historyLength = result.getThreadSamplesCount();
+		int historyLength = result.getSamplesCount() / result.getConcurrencyLevel();
 		out.println("Execution elapsed time log (in microseconds):");
 		out.println("---------------------------------------------");
 		for (int i = 0; i < historyLength; i++) {

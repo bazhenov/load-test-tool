@@ -6,8 +6,13 @@
 	<artifactId>ldt-parent</artifactId>
 	<packaging>pom</packaging>
 	<version>1.0-SNAPSHOT</version>
-	<name>ldt-parent</name>
-	<url>http://maven.apache.org</url>
+	<name>Load Test Tool Parent</name>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.testng</groupId>
@@ -29,6 +34,7 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -38,6 +44,7 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+
 	<modules>
 		<module>ldt-core</module>
 		<module>ldt-assembly</module>
@@ -50,6 +57,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
+					<encoding>utf8</encoding>
 					<source>1.6</source>
 					<target>1.6</target>
 				</configuration>

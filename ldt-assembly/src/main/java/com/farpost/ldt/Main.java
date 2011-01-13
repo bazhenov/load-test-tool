@@ -6,6 +6,7 @@ import com.farpost.ldt.formatter.ResultFormatter;
 import org.apache.commons.cli.*;
 import org.apache.log4j.Logger;
 
+import java.io.PrintStream;
 import java.util.Map;
 
 import static java.lang.Integer.parseInt;
@@ -14,28 +15,24 @@ import static java.lang.System.exit;
 public class Main {
 
 	private static final Logger log = Logger.getLogger(Main.class);
+	private static final PrintStream out = System.out;
 
 	public static void main(String[] arg) throws ClassNotFoundException, NoSuchMethodException {
-
-		Options options = new Options();
-		options.addOption("z", "clazz", true, "full qualified test class name");
-		options.addOption("c", "concurrency-level", true, "concurrency level");
-		options.addOption("r", "result-printer", true, "result printer type (plain, log)");
-		options.addOption("n", "count", true, "sample count");
-		options.addOption("w", "warmup-threshold", true, "warmup test execution count");
-		options.addOption("p", "parameters", true, "task parameters");
-		options.addOption("t", "timeframe", true, "timeframe testing range (in milliseconds)");
-		String fqnClass;
-
+		Options options = prepareOptions();
 		try {
 			CommandLineParser parser = new PosixParser();
 			CommandLine args = parser.parse(options, arg);
 
-			fqnClass = readString(args, 'z');
+			String fqnClass = readString(args, 'z');
 			int concurrencyLevel = readPositiveInt(args, 'c', 1);
-			int sampleCount = readPositiveInt(args, 'n', 1);
+			int sampleCount = readPositiveInt(args, 'n', 0);
 			int warmupThreshold = readNonNegativeInt(args, 'w', 10);
 			int timeframe = readNonNegativeInt(args, 't', 0);
+
+			if (timeframe > 0 && sampleCount > 0) {
+				error("You specified both the timeframe (-t) and sample count (-c). Only one of them " +
+					"should be given at any time");
+			}
 
 			ResultFormatter formatter = createFormatter(args.getOptionValue('r'));
 
@@ -47,6 +44,7 @@ public class Main {
 			TestRunner runner = new TestRunner();
 			runner.setConcurrencyLevel(concurrencyLevel);
 			runner.setWarmUpThreshold(warmupThreshold);
+
 			if (timeframe > 0) {
 				runner.setTestInterruptionStarategy(new TimeFrameInteruptionStrategy(timeframe));
 			} else {
@@ -66,8 +64,20 @@ public class Main {
 			usage(options);
 			exit(1);
 		} catch (Exception e) {
-			error(e.getMessage());
+			error(e);
 		}
+	}
+
+	private static Options prepareOptions() {
+		Options options = new Options();
+		options.addOption("z", "clazz", true, "full qualified test class name");
+		options.addOption("c", "concurrency-level", true, "concurrency level");
+		options.addOption("r", "result-printer", true, "result printer type (plain, log)");
+		options.addOption("n", "count", true, "sample count");
+		options.addOption("w", "warmup-threshold", true, "warmup test execution count");
+		options.addOption("p", "parameters", true, "task parameters");
+		options.addOption("t", "timeframe", true, "timeframe testing range (in milliseconds)");
+		return options;
 	}
 
 	private static void injectParameters(Task task, String parameters) {
@@ -77,9 +87,9 @@ public class Main {
 
 	private static ResultFormatter createFormatter(String type) {
 		if ("plain".equalsIgnoreCase(type) || type == null) {
-			return new PlainResultFormatter(System.out);
+			return new PlainResultFormatter(out);
 		} else if ("log".equalsIgnoreCase(type)) {
-			return new ElapsedTimeLogResultFormatter(System.out);
+			return new ElapsedTimeLogResultFormatter(out);
 		} else {
 			throw new RuntimeException("Invalid formatter type: " + type);
 		}
@@ -117,7 +127,13 @@ public class Main {
 	}
 
 	private static void error(String message) {
-		System.out.println("fatal: " + message);
+		out.println("fatal: " + message);
+		exit(1);
+	}
+
+	private static void error(Exception e) {
+		out.println("fatal: " + e.getMessage());
+		e.printStackTrace(out);
 		exit(1);
 	}
 }

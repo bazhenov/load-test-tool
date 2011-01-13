@@ -43,7 +43,7 @@ public class TestRunnerTest {
 		TestResult result = runner.run(task);
 
 		assertThat(result.getConcurrencyLevel(), equalTo(concurrencyLevel));
-		assertThat(result.getThreadSamplesCount(), equalTo(samples * concurrencyLevel));
+		assertThat(result.getSamplesCount(), equalTo(samples * concurrencyLevel));
 		assertThat(result.getTotalTime(), near(samples * delay * 1000, 10 * 1000));
 	}
 
@@ -96,11 +96,5 @@ public class TestRunnerTest {
 		replay(task);
 		runner.run(task);
 		verify(task);
-	}
-
-	@Test
-	public void testRunnerCanCalculateStandardDeviation() {
-		long[][] numbers = new long[][]{{2, 4, 4, 4, 5, 5, 7, 9}};
-		assertThat(TestRunner.calculateStdDev(numbers), equalTo(2d));
 	}
 }

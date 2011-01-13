@@ -12,7 +12,7 @@
   <groupId>com.farpost.ldt</groupId>
   <artifactId>ldt-core</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <name>ldt-core</name>
+  <name>Load Test Tool Core API</name>
   <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>
