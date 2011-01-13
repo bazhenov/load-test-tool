@@ -60,7 +60,7 @@ Task running
 
 `ldt` can run tests written as a simple pojo objects. Let's see an sample:
 
-	class MathTest {
+	public class MathTest {
 
 		public void execute() {
 			Math.sin(30);
