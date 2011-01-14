@@ -16,6 +16,5 @@ public class PlainResultFormatterTest {
 		assertThat(formatTime(1000000), equalTo("1.0s"));
 		assertThat(formatTime(1235000), equalTo("1.235s"));
 		assertThat(formatTime(65235000l), equalTo("1m 5s"));
-
 	}
 }
