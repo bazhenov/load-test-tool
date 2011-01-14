@@ -109,7 +109,7 @@ If you have some bootstraping code which must be executed before tests run you c
 will be executed before any test in suite. All methods are called at one object instance, so `prepare()` method could communicate
 with test method using class properties:
 
-	class SomeTest {
+	public class SomeTest {
 		
 		private int[] numbers;
 
@@ -160,7 +160,7 @@ Test parameters
 
 Sometimes there is need to pass some parameters to a test. Suppose following test example:
 
-	class HttpRequestTest {
+	public class HttpRequestTest {
 
 		private String url;
 		private long timeout;
@@ -214,6 +214,13 @@ Then you should configure plugin in your `pom.xml`:
 				</plugin>
 			</plugins>
 	</project>
+
+In order to use timeframe based testing you should set testTime parameter:
+	<configuration>
+		<testName>com.farpost.test.ExampleTest</testName>
+		<concurrencyLevel>3</concurrencyLevel>
+		<testTime>2000</testTime>
+	</configuration>
 
 At this point you should be able to run:
 
