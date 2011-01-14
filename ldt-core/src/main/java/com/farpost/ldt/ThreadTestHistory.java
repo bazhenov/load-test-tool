@@ -22,6 +22,7 @@ public class ThreadTestHistory {
 	private final List<Long> samples = new ArrayList<Long>();
 	private long maxTime = 0;
 	private long minTime = 0;
+	private int failedSamples = 0;
 
 	/**
 	 * @return total execution time in microseconds
@@ -34,6 +35,9 @@ public class ThreadTestHistory {
 		return totalExecutionTime;
 	}
 
+	/**
+	 * @return the vector of successfully test samples execution times (in microseconds)
+	 */
 	public long[] getSamples() {
 		long[] result = new long[samples.size()];
 		for (int i = 0; i < samples.size(); i++) {
@@ -42,26 +46,49 @@ public class ThreadTestHistory {
 		return result;
 	}
 
+	/**
+	 * Register new test execution with given elapsed time
+	 *
+	 * @param time test elapsed time
+	 */
 	public void registerSample(long time) {
 		if (samples.isEmpty()) {
 			maxTime = minTime = time;
-		}else if (time > maxTime) {
+		} else if (time > maxTime) {
 			maxTime = time;
-		}else if (time < minTime) {
+		} else if (time < minTime) {
 			minTime = time;
 		}
 		samples.add(time);
 	}
 
+	public void registerFailedSample(long time) {
+		registerSample(time);
+		failedSamples++;
+	}
+
+	/**
+	 * @return the maximum of test elapsed time
+	 */
 	public long getMaxTime() {
 		return maxTime;
 	}
 
+	/**
+	 * @return the minimum of test elapsed time
+	 */
 	public long getMinTime() {
 		return minTime;
 	}
 
+	/**
+	 * @return the count of sucessfully taked test samples
+	 */
 	public int getSamplesCount() {
 		return samples.size();
+	}
+
+	public int getFailedSamplesCount() {
+		return failedSamples;
 	}
 }

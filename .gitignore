@@ -1,6 +1,7 @@
 /.idea
 *.iml
-/*.ipr
+*.ipr
+*.iws
 /*.deb
 target
 tags
