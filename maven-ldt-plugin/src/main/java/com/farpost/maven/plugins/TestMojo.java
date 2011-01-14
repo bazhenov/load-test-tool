@@ -1,9 +1,6 @@
 package com.farpost.maven.plugins;
 
-import com.farpost.ldt.CallCountInterruptionStrategy;
-import com.farpost.ldt.Task;
-import com.farpost.ldt.TestResult;
-import com.farpost.ldt.TestRunner;
+import com.farpost.ldt.*;
 import com.farpost.ldt.formatter.ResultFormatter;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -41,12 +38,25 @@ public class TestMojo extends AbstractMojo {
 	 *
 	 * @parameter expression="${ldt.callCount}"
 	 */
-	private int callCount = 1;
+	private int callCount = 0;
+
+	/**
+	 * Test time
+	 *
+	 * @parameter expression="${ldt.testTime}"
+	 */
+	private int time = 0;
 
 	public void execute() throws MojoExecutionException {
 		TestRunner runner = new TestRunner();
 		runner.setConcurrencyLevel(concurrencyLevel);
-		runner.setTestInterruptionStarategy(new CallCountInterruptionStrategy(callCount));
+		if (callCount > 0) {
+			runner.setTestInterruptionStarategy(new CallCountInterruptionStrategy(callCount));
+		}else if (time > 0) {
+			runner.setTestInterruptionStarategy(new TimeFrameInteruptionStrategy(time));
+		}else{
+			throw new RuntimeException("Missing interruption strategy. Please set testTime or callCount parameter");
+		}
 
 		Log log = getLog();
 		log.debug("Running tests for type: " + testName);
