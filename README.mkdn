@@ -215,6 +215,13 @@ Then you should configure plugin in your `pom.xml`:
 			</plugins>
 	</project>
 
+In order to use timeframe based testing you should set testTime parameter:
+	<configuration>
+		<testName>com.farpost.test.ExampleTest</testName>
+		<concurrencyLevel>3</concurrencyLevel>
+		<testTime>2000</testTime>
+	</configuration>
+
 At this point you should be able to run:
 
 	$ mvn ldt:test
