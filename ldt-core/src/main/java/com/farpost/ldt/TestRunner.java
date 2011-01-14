@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 
-import static java.lang.Math.pow;
-import static java.lang.Math.sqrt;
 import static java.lang.System.nanoTime;
 import static java.lang.Thread.currentThread;
 
@@ -20,7 +18,6 @@ import static java.lang.Thread.currentThread;
 public class TestRunner {
 
 	private volatile int concurrencyLevel = 1;
-	private volatile int threadSamplesCount = 1;
 	private volatile int warmUpThreshold = 10;
 	private volatile TestInterruptionStrategy testInterruptionStarategy = new CallCountInterruptionStrategy(1);
 
@@ -133,28 +130,27 @@ public class TestRunner {
 		private final TestInterruptionStrategy strategy;
 		private final int warmUpThreshold;
 		private final CyclicBarrier syncBarrier;
-		private final ThreadTestHistory threadTestHistory;
 		private final static Logger log = Logger.getLogger(Worker.class);
+		private ThreadTestHistory threadTestHistory;
 
 		private Worker(Task task, TestInterruptionStrategy strategy, int warmUpThreshold, CyclicBarrier syncBarrier) {
 			this.task = task;
 			this.strategy = strategy;
 			this.warmUpThreshold = warmUpThreshold;
 			this.syncBarrier = syncBarrier;
-			threadTestHistory = new ThreadTestHistory();
 		}
 
 		public void run() {
 			for (int i = 0; i < warmUpThreshold; i++) {
-				runAndMeasure(task);
+				try {
+					task.execute();
+				} catch (Exception e) {
+					log.error("Task warm up failed", e);
+				}
 			}
 			try {
 				syncBarrier.await();
-				long runningTime;
-				do {
-					runningTime = runAndMeasure(task);
-					threadTestHistory.registerSample(runningTime);
-				} while (strategy.shouldContinue(runningTime));
+				threadTestHistory = runAndMeasure(task);
 				syncBarrier.await();
 			} catch (BrokenBarrierException e) {
 				log.error(e.getMessage(), e);
@@ -170,18 +166,31 @@ public class TestRunner {
 		 * {@link System#nanoTime()} used for measurments. This method provides nothrow guarantee.
 		 *
 		 * @param task testing task
-		 * @return task execution time in microseconds
 		 */
-		private long runAndMeasure(Task task) {
-			long endTime, startTime = nanoTime();
-			try {
-				task.execute();
-			} catch (Exception e) {
-				log.error("Task execution failed", e);
-			} finally {
-				endTime = nanoTime();
-			}
-			return (endTime - startTime) / 1000;
+		private ThreadTestHistory runAndMeasure(Task task) {
+			ThreadTestHistory history = new ThreadTestHistory();
+			long endTime, elapsedTime, startTime;
+			Exception cause;
+			do {
+				startTime = nanoTime();
+				cause = null;
+				try {
+					task.execute();
+				} catch (Exception e) {
+					cause = e;
+				} finally {
+					endTime = nanoTime();
+				}
+				elapsedTime = (endTime - startTime) / 1000;
+
+				if (cause == null) {
+					history.registerSample(elapsedTime);
+				} else {
+					history.registerFailedSample(elapsedTime);
+					log.error("Task execution failed", cause);
+				}
+			} while (strategy.shouldContinue(elapsedTime));
+			return history;
 		}
 
 		public ThreadTestHistory getTestResult() {

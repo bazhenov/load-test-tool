@@ -31,5 +31,4 @@ public class TimeFrameInterruptionStrategyTest {
 		assertThat(strategy.shouldContinue(486), equalTo(true));
 		assertThat(strategy.shouldContinue(535), equalTo(false));
 	}
-
 }

@@ -13,9 +13,12 @@ public class ThreadTestHistoryTest {
 		history.registerSample(13);
 		history.registerSample(145);
 		history.registerSample(8);
+		history.registerFailedSample(16);
 		history.registerSample(2);
 
 		assertThat(history.getMaxTime(), equalTo(145L));
 		assertThat(history.getMinTime(), equalTo(2L));
+		assertThat(history.getSamplesCount(), equalTo(5));
+		assertThat(history.getFailedSamplesCount(), equalTo(1));
 	}
 }
