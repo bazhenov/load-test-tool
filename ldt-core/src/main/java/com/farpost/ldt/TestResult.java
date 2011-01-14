@@ -15,6 +15,7 @@ public class TestResult {
 	private int samplesCount;
 	private long maxTime = 0;
 	private long minTime = Long.MAX_VALUE;
+	private int failedSamplesCount;
 
 	public TestResult(List<ThreadTestHistory> threadsHistory) {
 		this.threadsHistory = threadsHistory;
@@ -50,6 +51,7 @@ public class TestResult {
 
 	private void mergeHistory(ThreadTestHistory threadHistory) {
 		samplesCount += threadHistory.getSamplesCount();
+		failedSamplesCount += threadHistory.getFailedSamplesCount();
 
 		if (threadHistory.getTotalTime() > totalTime) {
 			totalTime = threadHistory.getTotalTime();
@@ -72,6 +74,10 @@ public class TestResult {
 
 	public int getSamplesCount() {
 		return samplesCount;
+	}
+
+	public int getFailedSamplesCount() {
+		return failedSamplesCount;
 	}
 
 	public float getThroughput() {

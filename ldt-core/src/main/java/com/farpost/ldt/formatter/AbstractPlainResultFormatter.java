@@ -2,9 +2,6 @@ package com.farpost.ldt.formatter;
 
 import com.farpost.ldt.TestResult;
 import com.farpost.ldt.ThreadTestHistory;
-import com.farpost.ldt.Utils;
-
-import java.util.Arrays;
 
 import static com.farpost.ldt.Utils.percentile;
 import static java.lang.System.arraycopy;
@@ -19,6 +16,7 @@ public abstract class AbstractPlainResultFormatter implements ResultFormatter {
 		long standardDeviation = result.getStandardDeviation();
 		int concurrencyLevel = result.getConcurrencyLevel();
 		int samplesCount = result.getSamplesCount();
+		int failedSamplesCount = result.getFailedSamplesCount();
 		long totalTime = result.getTotalTime();
 		long minTime = result.getMinTime();
 		long maxTime = result.getMaxTime();
@@ -32,7 +30,12 @@ public abstract class AbstractPlainResultFormatter implements ResultFormatter {
 		writeLine("                     RESULTS                      ");
 		writeLine("--------------------------------------------------");
 		writeLine(String.format(" %-30s: %d", "Concurrency level", concurrencyLevel));
-		writeLine(String.format(" %-30s: %d", "Samples count", samplesCount));
+		if (failedSamplesCount > 0) {
+			writeLine(String.format(" %-30s: %d (failed: %d, %d%%)", "Samples count", samplesCount, failedSamplesCount,
+				failedSamplesCount * 100 / samplesCount ));
+		} else {
+			writeLine(String.format(" %-30s: %d", "Samples count", samplesCount));
+		}
 		writeLine(String.format(" %-30s: %s", "Total time", formatTime(totalTime)));
 		writeLine(String.format(" %-30s: %s", "Min. time", formatTime(minTime)));
 		writeLine(String.format(" %-30s: %s", "Max. time", formatTime(maxTime)));
