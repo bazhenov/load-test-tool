@@ -46,7 +46,7 @@ public class Main {
 			runner.setWarmUpThreshold(warmupThreshold);
 
 			if (timeframe > 0) {
-				runner.setTestInterruptionStarategy(new TimeFrameInteruptionStrategy(timeframe));
+				runner.setTestInterruptionStarategy(new TimeFrameInterruptionStrategy(timeframe));
 			} else {
 				runner.setTestInterruptionStarategy(new CallCountInterruptionStrategy(sampleCount));
 			}

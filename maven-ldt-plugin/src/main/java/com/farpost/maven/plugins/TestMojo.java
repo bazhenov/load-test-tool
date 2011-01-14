@@ -53,7 +53,7 @@ public class TestMojo extends AbstractMojo {
 		if (callCount > 0) {
 			runner.setTestInterruptionStarategy(new CallCountInterruptionStrategy(callCount));
 		}else if (time > 0) {
-			runner.setTestInterruptionStarategy(new TimeFrameInteruptionStrategy(time));
+			runner.setTestInterruptionStarategy(new TimeFrameInterruptionStrategy(time));
 		}else{
 			throw new RuntimeException("Missing interruption strategy. Please set testTime or callCount parameter");
 		}
