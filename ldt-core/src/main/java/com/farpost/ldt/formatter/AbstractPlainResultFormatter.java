@@ -75,9 +75,8 @@ public abstract class AbstractPlainResultFormatter implements ResultFormatter {
 			long seconds = (time % MIN) / SEC;
 			return minutes + "m " + seconds + "s";
 		} else if (time >= 1 * SEC) {
-			long seconds = time / SEC;
-			long miliseconds = (time % SEC) / MS;
-			return seconds + "." + miliseconds + "s";
+			double seconds = time / (double)SEC;
+			return String.format("%.2fs", seconds);
 		} else if (time >= 1 * MS) {
 			return (time / MS) + "ms";
 		} else if (time >= 1) {
