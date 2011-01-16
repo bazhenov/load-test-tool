@@ -6,11 +6,11 @@
 	<parent>
 		<artifactId>ldt-parent</artifactId>
 		<groupId>com.farpost.ldt</groupId>
-		<version>1.0-SNAPSHOT</version>
+		<version>1.1</version>
 	</parent>
 	<groupId>com.farpost.maven.plugins</groupId>
 	<artifactId>maven-ldt-plugin</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.1</version>
 	<name>Load Test Tool Maven plugin</name>
 	<packaging>maven-plugin</packaging>
 
@@ -18,7 +18,7 @@
 		<dependency>
 			<groupId>com.farpost.ldt</groupId>
 			<artifactId>ldt-core</artifactId>
-			<version>1.0-SNAPSHOT</version>
+			<version>1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.maven</groupId>
