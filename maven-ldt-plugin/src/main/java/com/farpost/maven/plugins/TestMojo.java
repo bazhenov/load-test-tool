@@ -18,63 +18,63 @@ import static com.farpost.ldt.TaskFactory.createTask;
  */
 public class TestMojo extends AbstractMojo {
 
-    /**
-     * Test name
-     *
-     * @parameter expression="${ldt.testName}"
-     * @required
-     */
-    private String testName;
+	/**
+	 * Test name
+	 *
+	 * @parameter expression="${ldt.testName}"
+	 * @required
+	 */
+	private String testName;
 
-    /**
-     * Concurrency level
-     *
-     * @parameter expression="${ldt.concurrencyLevel}"
-     */
-    private int concurrencyLevel = 1;
+	/**
+	 * Concurrency level
+	 *
+	 * @parameter expression="${ldt.concurrencyLevel}"
+	 */
+	private int concurrencyLevel = 1;
 
-    /**
-     * Call count
-     *
-     * @parameter expression="${ldt.callCount}"
-     */
-    private int callCount = 0;
+	/**
+	 * Call count
+	 *
+	 * @parameter expression="${ldt.callCount}"
+	 */
+	private int callCount = 0;
 
-    /**
-     * Test time
-     *
-     * @parameter expression="${ldt.testTime}"
-     */
-    private int time = 0;
+	/**
+	 * Test time
+	 *
+	 * @parameter expression="${ldt.testTime}"
+	 */
+	private int time = 0;
 
-    /**
-     * Warm Up Threshold
-     *
-     * @parameter expression="${ldt.warmUpThreshold}"
-     */
-    private int warmUpThreshold = 10;
+	/**
+	 * Warm Up Threshold
+	 *
+	 * @parameter expression="${ldt.warmUpThreshold}"
+	 */
+	private int warmUpThreshold = 10;
 
-    public void execute() throws MojoExecutionException {
-        TestRunner runner = new TestRunner();
-        runner.setConcurrencyLevel(concurrencyLevel);
-        runner.setWarmUpThreshold(warmUpThreshold);
-        if (callCount > 0) {
-            runner.setTestInterruptionStarategy(new CallCountInterruptionStrategy(callCount));
-        } else if (time > 0) {
-            runner.setTestInterruptionStarategy(new TimeFrameInterruptionStrategy(time));
-        } else {
-            throw new RuntimeException("Missing interruption strategy. Please set testTime or callCount parameter");
-        }
+	public void execute() throws MojoExecutionException {
+		TestRunner runner = new TestRunner();
+		runner.setConcurrencyLevel(concurrencyLevel);
+		runner.setWarmUpThreshold(warmUpThreshold);
+		if (callCount > 0) {
+			runner.setTestInterruptionStarategy(new CallCountInterruptionStrategy(callCount));
+		} else if (time > 0) {
+			runner.setTestInterruptionStarategy(new TimeFrameInterruptionStrategy(time));
+		} else {
+			throw new RuntimeException("Missing interruption strategy. Please set testTime or callCount parameter");
+		}
 
-        Log log = getLog();
-        log.debug("Running tests for type: " + testName);
-        try {
-            Task task = createTask(testName);
-            TestResult result = runner.run(task);
-            ResultFormatter formatter = new MavenLogFormatter(getLog());
-            formatter.format(result);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+		Log log = getLog();
+		log.debug("Running tests for type: " + testName);
+		try {
+			Task task = createTask(testName);
+			TestResult result = runner.run(task);
+			ResultFormatter formatter = new MavenLogFormatter(getLog());
+			formatter.format(result);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 }
