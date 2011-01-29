@@ -81,14 +81,18 @@ public class TestRunnerTest {
 	public void testRunnerShouldWarmUpTest() throws Exception {
 		runner.setWarmUpThreshold(2);
 		runner.setThreadSamplesCount(1);
+		runner.setConcurrencyLevel(2);
 
 		Task task = createMock(Task.class);
 
 		task.prepare();
 
+		// Warm up mock calls
 		task.execute();
 		task.execute();
 
+		// Testing mock calls
+		task.execute();
 		task.execute();
 
 		task.cleanup();

@@ -24,18 +24,29 @@ public class TestRunner {
 	private static final Logger log = Logger.getLogger(TestRunner.class);
 
 	public synchronized TestResult run(Task task) throws InterruptedException {
-		prepare(task);
 		// Saving concurrency level locally, so now we are safe agains concurrent changes of this.concurrencyLevel
 		int threadPoolSize = concurrencyLevel;
+		prepare(task);
+		warmUp(task);
 		try {
 			CyclicBarrier sync = new CyclicBarrier(threadPoolSize + 1);
-			List<Worker> workers = spawnWorkers(task, threadPoolSize, warmUpThreshold, sync);
+			List<Worker> workers = spawnWorkers(task, threadPoolSize, sync);
 			startAndWaitForComplete(sync);
 
 			List<ThreadTestHistory> threadHistory = collectExecutionHistory(workers);
 			return new TestResult(threadHistory);
 		} finally {
 			cleanup(task);
+		}
+	}
+
+	private void warmUp(Task task) {
+		for (int i = 0; i < warmUpThreshold; i++) {
+			try {
+				task.execute();
+			} catch (Exception e) {
+				log.error("Task warm up failed", e);
+			}
 		}
 	}
 
@@ -69,17 +80,17 @@ public class TestRunner {
 	}
 
 	private List<ThreadTestHistory> collectExecutionHistory(List<Worker> workerList) {
-		List<ThreadTestHistory> threadsHistory = new ArrayList<ThreadTestHistory>(concurrencyLevel);
+		List<ThreadTestHistory> threadsHistory = new ArrayList<ThreadTestHistory>(workerList.size());
 		for (Worker worker : workerList) {
 			threadsHistory.add(worker.getTestResult());
 		}
 		return threadsHistory;
 	}
 
-	private List<Worker> spawnWorkers(Task task, int threadPoolSize, int warmUpThreshold, CyclicBarrier sync) {
+	private List<Worker> spawnWorkers(Task task, int threadPoolSize, CyclicBarrier sync) {
 		List<Worker> workerList = new ArrayList<Worker>(threadPoolSize);
 		for (int i = 0; i < threadPoolSize; i++) {
-			Worker worker = new Worker(task, testInterruptionStarategy, warmUpThreshold, sync);
+			Worker worker = new Worker(task, testInterruptionStarategy, sync);
 			workerList.add(worker);
 			new Thread(worker, "LDT Thread #" + i).start();
 		}
@@ -128,26 +139,17 @@ public class TestRunner {
 
 		private final Task task;
 		private final TestInterruptionStrategy strategy;
-		private final int warmUpThreshold;
 		private final CyclicBarrier syncBarrier;
 		private final static Logger log = Logger.getLogger(Worker.class);
 		private ThreadTestHistory threadTestHistory;
 
-		private Worker(Task task, TestInterruptionStrategy strategy, int warmUpThreshold, CyclicBarrier syncBarrier) {
+		private Worker(Task task, TestInterruptionStrategy strategy, CyclicBarrier syncBarrier) {
 			this.task = task;
 			this.strategy = strategy;
-			this.warmUpThreshold = warmUpThreshold;
 			this.syncBarrier = syncBarrier;
 		}
 
 		public void run() {
-			for (int i = 0; i < warmUpThreshold; i++) {
-				try {
-					task.execute();
-				} catch (Exception e) {
-					log.error("Task warm up failed", e);
-				}
-			}
 			try {
 				syncBarrier.await();
 				threadTestHistory = runAndMeasure(task);
