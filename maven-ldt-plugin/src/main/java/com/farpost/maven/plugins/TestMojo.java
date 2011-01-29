@@ -10,7 +10,7 @@ import static com.farpost.ldt.TaskFactory.createTask;
 
 /**
  * Implementation of ldt:test goal.
- *
+ * <p/>
  * This goal uses ldt API for executing given task.
  *
  * @goal test
@@ -47,14 +47,22 @@ public class TestMojo extends AbstractMojo {
 	 */
 	private int time = 0;
 
+	/**
+	 * Warm Up Threshold
+	 *
+	 * @parameter expression="${ldt.warmUpThreshold}"
+	 */
+	private int warmUpThreshold = 10;
+
 	public void execute() throws MojoExecutionException {
 		TestRunner runner = new TestRunner();
 		runner.setConcurrencyLevel(concurrencyLevel);
+		runner.setWarmUpThreshold(warmUpThreshold);
 		if (callCount > 0) {
 			runner.setTestInterruptionStarategy(new CallCountInterruptionStrategy(callCount));
-		}else if (time > 0) {
+		} else if (time > 0) {
 			runner.setTestInterruptionStarategy(new TimeFrameInterruptionStrategy(time));
-		}else{
+		} else {
 			throw new RuntimeException("Missing interruption strategy. Please set testTime or callCount parameter");
 		}
 
