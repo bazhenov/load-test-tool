@@ -1,7 +1,7 @@
 #!/bin/sh
 
 LINK=$0
-[ -h $0 ] && LINK=`readlink $0`
+[ -h $0 ] && LINK=`readlink -f $0`
 WHOME=`dirname $LINK`
 LDT_CLASSPATH=.:./target/classes:$LDT_CLASSPATH
 
