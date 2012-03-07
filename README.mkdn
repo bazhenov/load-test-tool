@@ -1,18 +1,17 @@
 Load test tool
 ==============
 
-Simple but powerful command line tool for load testing your Java modules. It has simple API that allows you to define
-testing tasks. It have concept similar to JUnit/TestNG tests but with concentration on performance measurements in concurrent
-environment.
+Simple but powerful command line tool for load testing your Java modules. It has a simple API that allows you to define
+testing tasks. It has a concept similar to JUnit/TestNG tests but with concentration on performance measurements in concurrent environment.
 
 Installing
 ==========
 
-If you use Debian based OS (Ubuntu, for example), you could simply download `.deb` package from: http://github.com/bazhenov/load-test-tool/downloads
+If you use a Debian based OS (Ubuntu, for example), you could simply download a `.deb` package from: http://github.com/bazhenov/load-test-tool/downloads
 
 Then you should execute:
 
-	# dpkg -i load-test-tool-1.0-2.deb
+	# dpkg -i load-test-tool-1.0-3.deb
 
 Building
 ========
@@ -53,12 +52,12 @@ directory where `ldt` will be installed:
 	 Std. dev.                     : ~349mcs
 	 Throughput                    : 6.7 tps
 
-You could use alias or some another way to publish `ldt.sh` script in your shell environment (`ln -s` is good way to start).
+You could use alias or some other way to publish `ldt.sh` script in your shell environment (`ln -s` is a good way to start).
 
 Task running
 ============
 
-`ldt` can run tests written as a simple pojo objects. Let's see an sample:
+`ldt` can run tests written as a simple pojo objects. Let's see a sample:
 
 	public class MathTest {
 
@@ -71,9 +70,9 @@ Method `execute()` called when you pass `MathTest` as a class name.
 
 	$ ldt -z org.mypackage.MathTest
 
-This command will run tests and display execution statistic. It worth to mention that `ldt` automatically add current directory to classpath.
+This command will run tests and display execution statistic. It's worth to mention that `ldt` automatically adds current directory to classpath.
 
-You could ajust concurrency level and thread sample count (task repeat count)
+You could adjust concurrency level and thread sample count (task repeat count)
 
 	$ ldt -z full.quialified.ClassName -c 2 -n 100
 
