@@ -123,7 +123,7 @@ public class Main {
 
 	private static void usage(Options options) {
 		HelpFormatter formatter = new HelpFormatter();
-		formatter.printHelp("ltd", options);
+		formatter.printHelp("ldt", options);
 	}
 
 	private static void error(String message) {
