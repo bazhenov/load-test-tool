@@ -99,7 +99,7 @@ Strictly speaking test address `full.quialified.ClassName` equals to `full.quial
 	1948
 
 As you see I have not a very good link to `google.com`. I'm inclined to think that my physical location is reason to that ;)
-Anyhow, this example shows how you can use standard task in conjuction with different result printer (`-r log`) to get raw elapsed
+Anyhow, this example shows how you can use standard task in conjunction with different result printer (`-r log`) to get raw elapsed
 time log for several http requests.
 
 Fixture
